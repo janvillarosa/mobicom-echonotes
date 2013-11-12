@@ -3,6 +3,7 @@ package com.mobicom.echonotes;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.MenuInflater;
 
 public class ListOfNotes extends Activity {
 
@@ -12,11 +13,12 @@ public class ListOfNotes extends Activity {
 		setContentView(R.layout.notes_list);
 	}
 
-	@Override
+	@Override	
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.list_of_notes, menu);
-		return true;
+	    // Inflate the menu items for use in the action bar
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.list_of_notes, menu);
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 }
