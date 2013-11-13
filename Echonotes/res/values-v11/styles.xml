@@ -8,7 +8,7 @@
         <item name = "android:actionBarStyle">@style/MyActionBar</item>
     </style>
     
-    <style name = "MyTheme" parent="android:style/Theme.Holo.Light">
+    <style name = "MyTheme" parent="android:style/Theme.Holo">
         <item name = "android:actionBarStyle">@style/MyActionBar</item>
         
 
