@@ -2,7 +2,6 @@ package com.mobicom.echonotes;
 
 import java.util.ArrayList;
 
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
@@ -24,17 +23,15 @@ public class ListOfNotes extends Activity {
 	ListView list;
 	CustomAdapter adapter;
 	public ArrayList<ListModel> CustomListViewValuesArr = new ArrayList<ListModel>();
-	private String[] test = {"test"};
-	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
-	private static LayoutInflater inflater = null;
-	private ActionBarDrawerToggle mDrawerToggle;
+	private String[] drawerListViewItems;
+	private DrawerLayout drawerLayout;
+	private ListView drawerListView;
+	private ActionBarDrawerToggle actionBarDrawerToggle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
-		inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		setListData();
 
@@ -45,83 +42,63 @@ public class ListOfNotes extends Activity {
 		/**************** Create Custom Adapter *********/
 		adapter = new CustomAdapter(this, CustomListViewValuesArr, res);
 		list.setAdapter(adapter);
-		
-		View navDrawer = inflater.inflate(R.layout.nav_drawer, null);
-		
-		mDrawerLayout = (DrawerLayout) navDrawer.findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) navDrawer.findViewById(R.id.left_drawer);
- 
+
+		// get list items from strings.xml
+		drawerListViewItems = getResources().getStringArray(R.array.items);
+
+		// get ListView defined in activity_main.xml
+		drawerListView = (ListView) findViewById(R.id.left_drawer);
 
 		// Set the adapter for the list view
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_drawer, test));
-		// Set the list's click listener
-		//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		drawerListView.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.nav_line_item, drawerListViewItems));
 
-		mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-                R.string.dropen,  /* "open drawer" description */
-                R.string.drclose  /* "close drawer" description */
-                ) {
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle("My Echonotes");
-                invalidateOptionsMenu();
-            }
+		actionBarDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+		drawerLayout, /* DrawerLayout object */
+		R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+		R.string.drawer_open, /* "open drawer" description */
+		R.string.drawer_close /* "close drawer" description */
+		);
 
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle("Navigation");
-                invalidateOptionsMenu();
-            }
-        };
-        
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
+		// Set actionBarDrawerToggle as the DrawerListener
+		drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu items for use in the action bar
-		MenuInflater inflaterMenu = getMenuInflater();
-		inflaterMenu.inflate(R.menu.list_of_notes, menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.list_of_notes, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		actionBarDrawerToggle.onConfigurationChanged(newConfig);
+	}
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-          return true;
-        }
-        // Handle your other action bar items...
+		// call ActionBarDrawerToggle.onOptionsItemSelected(), if it returns
+		// true
+		// then it has handled the app icon touch event
+		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-        return super.onOptionsItemSelected(item);
-    }
-    
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        //menu.findItem(R.id.left_drawer).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
-    }
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		actionBarDrawerToggle.syncState();
+	}
 
 	public void setListData() {
 

@@ -4,7 +4,13 @@
     <string name="app_name">Echonotes</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
-    <string name="dropen">Open</string>
-    <string name="drclose">Close</string>
+    
+     <string-array name="items">
+        <item>Record New Note</item>
+        <item>Select Notes</item>
+    </string-array>
+ 
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
 
 </resources>
