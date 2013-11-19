@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ public class ListOfNotes extends Activity {
 	private DrawerLayout drawerLayout;
 	private ListView drawerListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
+	private ImageButton newNote;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,15 @@ public class ListOfNotes extends Activity {
 		drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		newNote = (ImageButton)findViewById(R.id.newNoteButton);
+		
+		newNote.setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v){
+				Intent intent = new Intent(ListOfNotes.this,RecordNote.class);
+				startActivity(intent);
+			}
+		});
 	}
 
 	@Override
