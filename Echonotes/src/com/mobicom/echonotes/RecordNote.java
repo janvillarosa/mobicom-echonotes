@@ -42,11 +42,17 @@ public class RecordNote extends Activity {
 		// RECORD BUTTON LISTENER
 		startRecord.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				onRecord(mStartRecording);
-				mStartRecording = !mStartRecording;
+				if(mStartRecording){
+					startRecording();
+					startRecord.setImageResource(R.drawable.stop_record);
+				}else{
+					stopRecording();
+					startRecord.setImageResource(R.drawable.start_record);
+				}
 			}
 		});
 		
+		//NEW PHOTO ANNOTATION LISTENER
 		newPhoto.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent newPhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -66,17 +72,11 @@ public class RecordNote extends Activity {
 
 	/** Create a File for saving an image or video */
 	private File getOutputMediaFile(int type) {
-		// To be safe, you should check that the SDCard is mounted
-		// using Environment.getExternalStorageState() before doing this.
 
 		File mediaStorageDir = new File(
-				Environment
-						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
 				"Echonotes");
-		// This location works best if you want the created images to be shared
-		// between applications and persist after your app has been uninstalled.
 
-		// Create the storage directory if it does not exist
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
 				Log.d("Echonotes", "failed to create directory");
@@ -117,25 +117,18 @@ public class RecordNote extends Activity {
 			}
 		}
 	}
-
-	private void onRecord(boolean start) {
-		if (start) {
-			startRecording();
-		} else {
-			stopRecording();
-		}
-	}
 	
 	public int annotationTimestamp(){
-		int annotationTime = Integer.parseInt(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-		int recordTime = Integer.parseInt(mFileName);
+		long annotationTime = Integer.parseInt(new SimpleDateFormat("HHmmss").format(new Date()));
+		//long recordTime = Integer.parseInt(mFileName);
 		
-		return annotationTime - recordTime;
+		return 234;//annotationTime - recordTime;
 		
 	}
 
 	private void startRecording() {
-		mFileName = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		mStartRecording = false;
+		mFileName = new SimpleDateFormat("HHmmss").format(new Date());
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -156,6 +149,7 @@ public class RecordNote extends Activity {
 		mRecorder.stop();
 		mRecorder.release();
 		mRecorder = null;
+		mStartRecording = true;
 	}
 
 }
