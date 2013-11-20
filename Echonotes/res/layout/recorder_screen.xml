@@ -31,7 +31,7 @@
                 android:src="@drawable/add_note_annotation" />
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/newPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitEnd"
@@ -39,7 +39,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/startRecordImageView"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_above="@+id/buttonLayout"
