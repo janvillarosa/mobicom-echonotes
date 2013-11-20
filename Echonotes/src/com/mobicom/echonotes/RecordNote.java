@@ -60,12 +60,12 @@ public class RecordNote extends Activity {
 
 	}
 
-	private static Uri getOutputMediaFileUri(int type) {
+	private Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 
 	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(int type) {
+	private File getOutputMediaFile(int type) {
 		// To be safe, you should check that the SDCard is mounted
 		// using Environment.getExternalStorageState() before doing this.
 
@@ -85,8 +85,7 @@ public class RecordNote extends Activity {
 		}
 
 		// Create a media file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
-				.format(new Date());
+		String timeStamp = Integer.toString(annotationTimestamp());
 		File mediaFile;
 
 		if (type == MEDIA_TYPE_IMAGE) {
@@ -125,6 +124,14 @@ public class RecordNote extends Activity {
 		} else {
 			stopRecording();
 		}
+	}
+	
+	public int annotationTimestamp(){
+		int annotationTime = Integer.parseInt(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+		int recordTime = Integer.parseInt(mFileName);
+		
+		return annotationTime - recordTime;
+		
 	}
 
 	private void startRecording() {
