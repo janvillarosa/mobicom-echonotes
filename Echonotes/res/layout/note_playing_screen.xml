@@ -23,7 +23,7 @@
             android:weightSum="2" >
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/newTextNoteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

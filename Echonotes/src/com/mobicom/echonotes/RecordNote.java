@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -25,44 +26,56 @@ public class RecordNote extends Activity {
 	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFileName;
 	private MediaRecorder mRecorder = null;
-	private ImageView startRecord, newPhoto;
+	private ImageView startRecord, newPhoto, newText;
 	private boolean mStartRecording = true;
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private Uri fileUri;
 	private static final int MEDIA_TYPE_IMAGE = 1;
+	private long recordingTimestamp = 10;
+	private EditText noteName;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recorder_screen);
 		startRecord = (ImageView) findViewById(R.id.startRecordImageView);
 		newPhoto = (ImageView) findViewById(R.id.newPhotoImageView);
+		noteName = (EditText) findViewById(R.id.noteNameEditText);
+		newText = (ImageView) findViewById(R.id.newTextNoteImageView);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// RECORD BUTTON LISTENER
 		startRecord.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if(mStartRecording){
+				if (mStartRecording) {
 					startRecording();
 					startRecord.setImageResource(R.drawable.stop_record);
-				}else{
+				} else {
 					stopRecording();
 					startRecord.setImageResource(R.drawable.start_record);
 				}
 			}
 		});
-		
-		//NEW PHOTO ANNOTATION LISTENER
+
+		// NEW PHOTO ANNOTATION LISTENER
 		newPhoto.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Intent newPhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				Intent newPhotoIntent = new Intent(
+						MediaStore.ACTION_IMAGE_CAPTURE);
 				fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				newPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-				
-				startActivityForResult(newPhotoIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+
+				startActivityForResult(newPhotoIntent,
+						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		});
-
+		
+		// NEW TEXT ANNOTATION LISTENER
+				newText.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						setContentView(R.layout.notewriter);
+					}
+				});
 
 	}
 
@@ -74,7 +87,8 @@ public class RecordNote extends Activity {
 	private File getOutputMediaFile(int type) {
 
 		File mediaStorageDir = new File(
-				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+				Environment
+						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
 				"Echonotes");
 
 		if (!mediaStorageDir.exists()) {
@@ -117,18 +131,21 @@ public class RecordNote extends Activity {
 			}
 		}
 	}
-	
-	public int annotationTimestamp(){
-		long annotationTime = Integer.parseInt(new SimpleDateFormat("HHmmss").format(new Date()));
-		//long recordTime = Integer.parseInt(mFileName);
-		
-		return 234;//annotationTime - recordTime;
-		
+
+	public int annotationTimestamp() {
+		long annotationTime = Integer.parseInt(new SimpleDateFormat("HHmmss")
+				.format(new Date()));
+		long recordTime = recordingTimestamp;
+
+		return 234;// annotationTime - recordTime;
+
 	}
 
 	private void startRecording() {
 		mStartRecording = false;
-		mFileName = new SimpleDateFormat("HHmmss").format(new Date());
+		recordingTimestamp = Integer.parseInt(new SimpleDateFormat("HHmmss")
+				.format(new Date()));
+		mFileName = noteName.getText().toString();
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

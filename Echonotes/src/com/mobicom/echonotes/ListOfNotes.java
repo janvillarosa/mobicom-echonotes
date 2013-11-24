@@ -75,6 +75,7 @@ public class ListOfNotes extends Activity {
 		newNote.setOnClickListener(new View.OnClickListener(){
 			public void onClick(View v){
 				Intent intent = new Intent(ListOfNotes.this,RecordNote.class);
+				newNote.setImageResource(R.drawable.newnote_button_pressed);
 				startActivity(intent);
 			}
 		});
@@ -84,6 +85,7 @@ public class ListOfNotes extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.list_of_notes, menu);
+		menu.findItem(R.id.action_search).getActionView();
 		return super.onCreateOptionsMenu(menu);
 	}
 
