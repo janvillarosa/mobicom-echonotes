@@ -5,13 +5,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.mobicom.echonotes.R;
-import com.mobicom.echonotes.R.drawable;
-import com.mobicom.echonotes.R.id;
-import com.mobicom.echonotes.R.layout;
-import com.mobicom.echonotes.R.menu;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaRecorder;
@@ -23,42 +16,61 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.data.RecordingSession;
 
 public class RecordNote extends Activity {
 
 	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFileName;
+	private boolean isRecording = true;
+	
+	private Uri fileUri;
 	private MediaRecorder mRecorder = null;
 	private ImageView startRecord, newPhoto, newText;
-	private boolean mStartRecording = true;
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	private Uri fileUri;
-	private static final int MEDIA_TYPE_IMAGE = 1;
-	private long recordingTimestamp = 10;
 	private EditText noteName;
+	RecordingSession currentNote;
+	
+	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	private static final int MEDIA_TYPE_IMAGE = 1;
+	private long recordingTimestamp;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recorder_screen);
+		
 		startRecord = (ImageView) findViewById(R.id.startRecordImageView);
 		newPhoto = (ImageView) findViewById(R.id.newPhotoImageView);
 		noteName = (EditText) findViewById(R.id.noteNameEditText);
 		newText = (ImageView) findViewById(R.id.newTextNoteImageView);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		setListeners();
+		
+		currentNote = new RecordingSession();
 
+	}
+	
+	private void setListeners(){
 		// RECORD BUTTON LISTENER
 		startRecord.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				if (mStartRecording) {
+				if (!isRecording) {
 					startRecording();
 					startRecord.setImageResource(R.drawable.stop_record);
 				} else {
 					stopRecording();
 					startRecord.setImageResource(R.drawable.start_record);
+					
+					currentNote.setName(mFileName);
+					currentNote.setRecordingFilePath(noteName.getText().toString()+"_main_recording"+".3gpp");
+					
+					currentNote.writeMetadata();
 				}
 			}
 		});
@@ -73,16 +85,18 @@ public class RecordNote extends Activity {
 
 				startActivityForResult(newPhotoIntent,
 						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+				currentNote.getAnnotationCounter().add(annotationTimestamp());
 			}
 		});
 		
 		// NEW TEXT ANNOTATION LISTENER
 				newText.setOnClickListener(new View.OnClickListener() {
 					public void onClick(View v) {
-						setContentView(R.layout.notewriter);
+						setContentView(R.layout.text_annotation);
+						//saveTextButton = (Button) findViewById(R.id.startRecordImageView);
+						//cancelTextButton = (Button) findViewById(R.id.startRecordImageView);
 					}
 				});
-
 	}
 
 	private Uri getOutputMediaFileUri(int type) {
@@ -105,11 +119,14 @@ public class RecordNote extends Activity {
 		}
 
 		// Create a media file name
-		String timeStamp = Integer.toString(annotationTimestamp());
+		String timeStamp = Long.toString(annotationTimestamp());
 		File mediaFile;
 
 		if (type == MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(mediaStorageDir.getPath() + File.separator
+					+ "IMG_" + timeStamp + ".jpg");
+			
+			currentNote.getListOfPicturePathAnnotations().add(mediaStorageDir.getPath() + File.separator
 					+ "IMG_" + timeStamp + ".jpg");
 		} else {
 			return null;
@@ -138,7 +155,7 @@ public class RecordNote extends Activity {
 		}
 	}
 
-	public int annotationTimestamp() {
+	public long annotationTimestamp() {
 		long annotationTime = Integer.parseInt(new SimpleDateFormat("HHmmss")
 				.format(new Date()));
 		long recordTime = recordingTimestamp;
@@ -148,16 +165,15 @@ public class RecordNote extends Activity {
 	}
 
 	private void startRecording() {
-		mStartRecording = false;
 		recordingTimestamp = Integer.parseInt(new SimpleDateFormat("HHmmss")
 				.format(new Date()));
-		mFileName = noteName.getText().toString();
+		mFileName = noteName.getText().toString()+"_main_recording"+".3gpp";
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 		mRecorder.setOutputFile(mFileName);
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
 		try {
 			mRecorder.prepare();
@@ -166,13 +182,14 @@ public class RecordNote extends Activity {
 		}
 
 		mRecorder.start();
+		isRecording = true;
 	}
 
 	private void stopRecording() {
 		mRecorder.stop();
 		mRecorder.release();
 		mRecorder = null;
-		mStartRecording = true;
+		isRecording = false;
 	}
 
 }
