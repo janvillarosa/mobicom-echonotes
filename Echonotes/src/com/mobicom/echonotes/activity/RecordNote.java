@@ -48,6 +48,8 @@ public class RecordNote extends Activity {
 		newPhoto = (ImageView) findViewById(R.id.newPhotoImageView);
 		noteName = (EditText) findViewById(R.id.noteNameEditText);
 		newText = (ImageView) findViewById(R.id.newTextNoteImageView);
+		
+		newPhoto.setClickable(false);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setListeners();
@@ -63,6 +65,7 @@ public class RecordNote extends Activity {
 				if (!isRecording) {
 					startRecording();
 					startRecord.setImageResource(R.drawable.stop_record);
+					newPhoto.setClickable(false);
 				} else {
 					stopRecording();
 					startRecord.setImageResource(R.drawable.start_record);
@@ -145,7 +148,7 @@ public class RecordNote extends Activity {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				// Image captured and saved to fileUri specified in the Intent
-				Toast.makeText(this, "Image saved to:\n" + data.getData(),
+				Toast.makeText(this, "Image saved to:\n",
 						Toast.LENGTH_LONG).show();
 			} else if (resultCode == RESULT_CANCELED) {
 				// User cancelled the image capture

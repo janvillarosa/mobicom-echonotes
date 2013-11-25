@@ -22,6 +22,10 @@
         android:id="@+id/newTextNoteEditText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="top"
+        android:hint="Enter your annotation"
+        android:fontFamily="serif"
+        android:textColor="#000000"
         android:ems="10"
         android:inputType="textMultiLine" />
 
