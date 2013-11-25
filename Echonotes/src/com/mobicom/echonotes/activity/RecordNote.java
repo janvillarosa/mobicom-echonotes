@@ -108,7 +108,7 @@ public class RecordNote extends Activity {
 
 		File mediaStorageDir = new File(
 				Environment
-						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+						.getExternalStorageDirectory(),
 				"Echonotes");
 
 		if (!mediaStorageDir.exists()) {
