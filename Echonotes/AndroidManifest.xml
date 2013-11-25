@@ -20,7 +20,7 @@
         android:label="Echonotes"
         android:theme="@style/MyTheme" >
         <activity
-            android:name="com.mobicom.echonotes.ListOfNotes"
+            android:name="com.mobicom.echonotes.activity.ListOfNotes"
             android:label="My Echonotes" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,9 +29,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.mobicom.echonotes.RecordNote"
+            android:name="com.mobicom.echonotes.activity.RecordNote"
             android:label="Recording"
-            android:parentActivityName="com.mobicom.echonotes.ListOfNotes" >
+            android:parentActivityName="com.mobicom.echonotes.activity.ListOfNotesistOfNotes" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mobicom.echonotes.ListOfNotes" />

@@ -1,9 +1,15 @@
-package com.mobicom.echonotes;
+package com.mobicom.echonotes.activity;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.R.drawable;
+import com.mobicom.echonotes.R.id;
+import com.mobicom.echonotes.R.layout;
+import com.mobicom.echonotes.R.menu;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

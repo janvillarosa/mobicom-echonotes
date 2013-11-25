@@ -1,6 +1,17 @@
-package com.mobicom.echonotes;
+package com.mobicom.echonotes.activity;
 
 import java.util.ArrayList;
+
+import com.mobicom.echonotes.ListModel;
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.R.array;
+import com.mobicom.echonotes.R.drawable;
+import com.mobicom.echonotes.R.id;
+import com.mobicom.echonotes.R.layout;
+import com.mobicom.echonotes.R.menu;
+import com.mobicom.echonotes.R.string;
+import com.mobicom.echonotes.adapters.CustomAdapter;
+
 
 import android.os.Bundle;
 import android.app.Activity;

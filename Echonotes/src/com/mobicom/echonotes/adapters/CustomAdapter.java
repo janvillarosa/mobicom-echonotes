@@ -1,6 +1,12 @@
-package com.mobicom.echonotes;
+package com.mobicom.echonotes.adapters;
 
 import java.util.ArrayList;
+
+import com.mobicom.echonotes.ListModel;
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.R.id;
+import com.mobicom.echonotes.R.layout;
+import com.mobicom.echonotes.activity.ListOfNotes;
 
 import android.app.Activity;
 import android.content.Context;
