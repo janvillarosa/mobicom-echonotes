@@ -172,7 +172,7 @@ public class RecordNote extends Activity {
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		mRecorder.setOutputFile(mFileName);
+		mRecorder.setOutputFile(Environment.getExternalStorageDirectory().getPath() + mFileName);
 		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
 
 		try {
