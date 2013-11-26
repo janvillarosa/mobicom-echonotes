@@ -38,9 +38,9 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/recordTimeTextView"
+        
+        <Chronometer
+            android:id="@+id/recordTimeChronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/playRecordingImageView"
@@ -55,8 +55,8 @@
             android:id="@+id/numAnnotationsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/recordTimeTextView"
-            android:layout_alignRight="@+id/recordTimeTextView"
+            android:layout_above="@+id/recordTimeChronometer"
+            android:layout_alignRight="@+id/recordTimeChronometer"
             android:fontFamily="sans-serif-light"
             android:text="annotations"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -108,5 +108,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     </ListView>
+    
+    <ViewStub android:id="@+id/stub"
+               android:inflatedId="@+id/subTree"
+               android:layout="@layout/text_annotation"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
 
 </LinearLayout>

@@ -11,14 +11,19 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobicom.echonotes.R;
@@ -39,7 +44,10 @@ public class RecordNote extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
 	private long recordingTimestamp;
-	
+	private ViewStub stub;
+	private Chronometer recordTime;
+	private TextView numAnnotations;
+
 	private Thread recordingThread;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +58,15 @@ public class RecordNote extends Activity {
 		newPhoto = (ImageView) findViewById(R.id.newPhotoImageView);
 		noteName = (EditText) findViewById(R.id.noteNameEditText);
 		newText = (ImageView) findViewById(R.id.newTextNoteImageView);
+		recordTime = (Chronometer) findViewById(R.id.recordTimeChronometer);
+		numAnnotations = (TextView)findViewById(R.id.numAnnotationsTextView);
 
 		newPhoto.setClickable(false);
 		
+		stub = (ViewStub) findViewById(R.id.stub);
+		stub.setVisibility(View.INVISIBLE);
+		//stub.inflate();
+
 		createDirectory();
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,27 +82,33 @@ public class RecordNote extends Activity {
 			public void onClick(View v) {
 				if (!isRecording) {
 					recordingThread = new Thread(new Runnable() {
-				        public void run() {
-				        	startRecording();
-				        }});
-					
+						public void run() {
+							startRecording();
+						}
+					});
+
 					recordingThread.start();
+					
+					recordTime.setBase(SystemClock.elapsedRealtime());
+					recordTime.start();
 					startRecord.setImageResource(R.drawable.stop_record);
 					newPhoto.setClickable(true);
 				} else {
 					stopRecording();
+					recordTime.stop();
 					startRecord.setImageResource(R.drawable.start_record);
 
 					currentNote.setName(mFileName);
 					currentNote.setRecordingFilePath(noteName.getText()
 							.toString() + "_main_recording" + ".3gpp");
 					newPhoto.setClickable(false);
+					
 					try {
 						recordingThread.join();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
 					currentNote.writeMetadata();
 				}
 			}
@@ -102,47 +122,56 @@ public class RecordNote extends Activity {
 				fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				newPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
-				startActivityForResult(newPhotoIntent,
-						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-				currentNote.getAnnotationCounter().add(annotationTimestamp());
+				startActivityForResult(newPhotoIntent,CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		});
 
 		// NEW TEXT ANNOTATION LISTENER
 		newText.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				setContentView(R.layout.text_annotation);
-				saveText = (Button) findViewById(R.id.saveTextButton);
 				
+				stub.setVisibility(View.VISIBLE);
+
+				saveText = (Button) findViewById(R.id.saveTextButton);
+
 				saveText.setOnClickListener(new View.OnClickListener() {
 					public void onClick(View v) {
 						currentNote.getAnnotationCounter().add(annotationTimestamp());
 					}
 				});
-				
+
+				cancelText = (Button) findViewById(R.id.cancelTextButton);
+
+				cancelText.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						stub.setVisibility(View.INVISIBLE);
+					}
+				});
+
 			}
 		});
 	}
 
-	private void createDirectory(){
-	File directory = new File(Environment.getExternalStorageDirectory()+"/Echonotes/"+ noteName.getText().toString());
-	
-	path = Environment.getExternalStorageDirectory() + "/Echonotes/"+ noteName.getText().toString();
+	private void createDirectory() {
+		File directory = new File(Environment.getExternalStorageDirectory()
+				+ "/Echonotes/" + noteName.getText().toString());
 
-	if (!directory.exists()) {
-		if (!directory.mkdirs()) {
-			Log.d("Echonotes", "failed to create directory");
+		path = Environment.getExternalStorageDirectory() + "/Echonotes/"
+				+ noteName.getText().toString();
+
+		if (!directory.exists()) {
+			if (!directory.mkdirs()) {
+				Log.d("Echonotes", "failed to create directory");
+			}
 		}
 	}
-	}
-	
+
 	private Uri getOutputMediaFileUri(int type) {
 		return Uri.fromFile(getOutputMediaFile(type));
 	}
 
 	/** Create a File for saving an image or video */
 	private File getOutputMediaFile(int type) {
-
 
 		// Create a media file name
 		String timeStamp = Long.toString(annotationTimestamp());
@@ -169,6 +198,8 @@ public class RecordNote extends Activity {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT).show();
+				currentNote.getAnnotationCounter().add(annotationTimestamp());
+				numAnnotations.setText(currentNote.getAnnotationCounter().size() + " annotations");
 			} else if (resultCode == RESULT_CANCELED) {
 			} else {
 			}
@@ -176,17 +207,11 @@ public class RecordNote extends Activity {
 	}
 
 	public long annotationTimestamp() {
-		long annotationTime = Integer.parseInt(new SimpleDateFormat("HHmmss")
-				.format(new Date()));
-		long recordTime = recordingTimestamp;
-
-		return annotationTime - recordTime;
+		return SystemClock.elapsedRealtime() - recordTime.getBase();
 
 	}
 
 	private void startRecording() {
-		recordingTimestamp = Integer.parseInt(new SimpleDateFormat("HHmmss")
-				.format(new Date()));
 
 		File recordingFile = new File(path + "/" + noteName.getText().toString() + "_main_recording" + ".3gp");
 
