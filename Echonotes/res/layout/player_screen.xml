@@ -33,7 +33,7 @@
             android:id="@+id/recordTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/startRecordImageView"
+            android:layout_alignBottom="@+id/playRecordingImageView"
             android:layout_alignParentRight="true"
             android:layout_marginRight="11dp"
             android:fontFamily="sans-serif-light"
@@ -54,7 +54,7 @@
             android:textSize="18sp" />
 
         <ImageView
-            android:id="@+id/startRecordImageView"
+            android:id="@+id/playRecordingImageView"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentLeft="true"
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/numAnnotationsTextView"
-            android:layout_alignTop="@+id/startRecordImageView"
+            android:layout_alignTop="@+id/playRecordingImageView"
             android:ems="10"
             android:fontFamily="sans-serif-medium"
             android:gravity="right"
