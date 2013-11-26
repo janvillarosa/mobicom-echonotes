@@ -25,16 +25,17 @@
                 android:id="@+id/newTextNoteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:scaleType="fitEnd"
-                android:src="@drawable/add_note_annotation" />
+                android:src="@drawable/add_note_annotation"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/newPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitEnd"
-                android:src="@drawable/add_picture_annotation" />
+                android:src="@drawable/add_picture_annotation" 
+                android:layout_weight="1" />
 
         </LinearLayout>
 
