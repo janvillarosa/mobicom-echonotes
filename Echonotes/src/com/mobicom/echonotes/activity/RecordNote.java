@@ -32,12 +32,15 @@ public class RecordNote extends Activity {
 	private Uri fileUri;
 	private MediaRecorder mRecorder = null;
 	private ImageView startRecord, newPhoto, newText;
+	private Button saveText, cancelText;
 	private EditText noteName;
 	RecordingSession currentNote;
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
 	private long recordingTimestamp;
+	
+	private Thread recordingThread;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,7 +67,12 @@ public class RecordNote extends Activity {
 		startRecord.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (!isRecording) {
-					startRecording();
+					recordingThread = new Thread(new Runnable() {
+				        public void run() {
+				        	startRecording();
+				        }});
+					
+					recordingThread.start();
 					startRecord.setImageResource(R.drawable.stop_record);
 					newPhoto.setClickable(true);
 				} else {
@@ -75,7 +83,12 @@ public class RecordNote extends Activity {
 					currentNote.setRecordingFilePath(noteName.getText()
 							.toString() + "_main_recording" + ".3gpp");
 					newPhoto.setClickable(false);
-
+					try {
+						recordingThread.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					currentNote.writeMetadata();
 				}
 			}
@@ -99,10 +112,14 @@ public class RecordNote extends Activity {
 		newText.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				setContentView(R.layout.text_annotation);
-				// saveTextButton = (Button)
-				// findViewById(R.id.startRecordImageView);
-				// cancelTextButton = (Button)
-				// findViewById(R.id.startRecordImageView);
+				saveText = (Button) findViewById(R.id.saveTextButton);
+				
+				saveText.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						currentNote.getAnnotationCounter().add(annotationTimestamp());
+					}
+				});
+				
 			}
 		});
 	}
