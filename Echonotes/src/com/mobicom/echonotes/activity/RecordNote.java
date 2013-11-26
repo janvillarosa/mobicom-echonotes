@@ -28,7 +28,7 @@ public class RecordNote extends Activity {
 
 	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFileName;
-	private boolean isRecording = true;
+	private boolean isRecording = false;
 	
 	private Uri fileUri;
 	private MediaRecorder mRecorder = null;
@@ -65,13 +65,14 @@ public class RecordNote extends Activity {
 				if (!isRecording) {
 					startRecording();
 					startRecord.setImageResource(R.drawable.stop_record);
-					newPhoto.setClickable(false);
+					newPhoto.setClickable(true);
 				} else {
 					stopRecording();
 					startRecord.setImageResource(R.drawable.start_record);
 					
 					currentNote.setName(mFileName);
 					currentNote.setRecordingFilePath(noteName.getText().toString()+"_main_recording"+".3gpp");
+					newPhoto.setClickable(false);
 					
 					currentNote.writeMetadata();
 				}
@@ -170,20 +171,24 @@ public class RecordNote extends Activity {
 	private void startRecording() {
 		recordingTimestamp = Integer.parseInt(new SimpleDateFormat("HHmmss")
 				.format(new Date()));
-		mFileName = noteName.getText().toString()+"_main_recording"+".3gpp";
+		mFileName = noteName.getText().toString()+"_main_recording"+".3gp";
+		
+		File mFile = new File(Environment.getExternalStorageDirectory()+"/"+ mFileName);
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		mRecorder.setOutputFile(Environment.getExternalStorageDirectory().getPath() + mFileName);
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-
+		mRecorder.setOutputFile(Environment.getExternalStorageDirectory()+"/"+ mFileName);
+		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		
 		try {
-			mRecorder.prepare();
+		    mRecorder.prepare();
+		} catch (IllegalStateException e) {
+		    e.printStackTrace();
 		} catch (IOException e) {
-			Log.e(LOG_TAG, "prepare() failed");
+		    e.printStackTrace();
+		    return;
 		}
-
 		mRecorder.start();
 		isRecording = true;
 	}
@@ -191,7 +196,7 @@ public class RecordNote extends Activity {
 	private void stopRecording() {
 		mRecorder.stop();
 		mRecorder.release();
-		mRecorder = null;
+		//mRecorder = null;
 		isRecording = false;
 	}
 
