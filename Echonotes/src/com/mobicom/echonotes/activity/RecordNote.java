@@ -267,7 +267,7 @@ public class RecordNote extends Activity {
 	private void startRecording() {
 
 		File recordingFile = new File(path + "/"
-				+ noteName.getText().toString() + "_main_recording" + ".3gp");
+				+ noteName.getText().toString() + "_main_recording.3gp");
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
