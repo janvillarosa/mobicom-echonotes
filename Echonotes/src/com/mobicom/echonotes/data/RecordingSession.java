@@ -1,24 +1,35 @@
 package com.mobicom.echonotes.data;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.Date;
 import java.util.ArrayList;
+
+import com.mobicom.echonotes.activity.ListOfNotes;
+
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
 public class RecordingSession {
 	
 	private ArrayList<String> listOfTextAnnotations;
 	private ArrayList<String> listOfPicturePathAnnotations;
-	private ArrayList<Long> annotationCounter;
+	private ArrayList<Long> annotationTimer;
 	private String recordingFilePath;
 	private String name;
-	private Date dateModified;
+	private String dateModified;
 	private String category;
 	
 	
 	public RecordingSession() {
 		listOfTextAnnotations = new ArrayList();
 		listOfPicturePathAnnotations = new ArrayList();
-		annotationCounter = new ArrayList();
+		annotationTimer = new ArrayList();
 		
 	}
 
@@ -64,12 +75,12 @@ public class RecordingSession {
 	}
 
 
-	public Date getDateModified() {
+	public String getDateModified() {
 		return dateModified;
 	}
 
 
-	public void setDateModified(Date dateModified) {
+	public void setDateModified(String dateModified) {
 		this.dateModified = dateModified;
 	}
 
@@ -78,13 +89,13 @@ public class RecordingSession {
 		return category;
 	}
 
-	public ArrayList<Long> getAnnotationCounter() {
-		return annotationCounter;
+	public ArrayList<Long> getAnnotationTimer() {
+		return annotationTimer;
 	}
 
 
-	public void setAnnotationCounter(ArrayList<Long> annotationCounter) {
-		this.annotationCounter = annotationCounter;
+	public void setAnnotationTimer(ArrayList<Long> annotationCounter) {
+		this.annotationTimer = annotationCounter;
 	}
 
 
@@ -93,7 +104,39 @@ public class RecordingSession {
 	}
 	
 	public void writeMetadata(){
-		//MIKEE'S CODE
+		
+		try {
+			Toast.makeText(null, "didn't write", Toast.LENGTH_LONG).show();
+		    BufferedWriter out = new BufferedWriter(new FileWriter(Environment.getExternalStorageDirectory().getPath()+"/Echonotes/notes.txt", true));
+			out.write(name+"\n");
+			out.write(recordingFilePath+"\n");
+			out.write(dateModified+"\n");
+			out.write(category+"\n");
+			for(int i=0;i<listOfTextAnnotations.size();i++){
+				out.write(listOfTextAnnotations.get(i)+"\n");
+			}
+			for(int i=0;i<listOfPicturePathAnnotations.size();i++){
+				out.write(listOfPicturePathAnnotations.get(i)+"\n");
+			}
+			for(int i=0;i<annotationTimer.size();i++){
+				out.write(annotationTimer.get(i)+"\n");
+			}
+			out.close();
+			
+		} catch (IOException e) {
+		// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(Environment.getExternalStorageDirectory().getPath()+"/Echonotes/categories.txt", true));
+			out.write(category+name+"\n");
+			out.close();
+		}catch (IOException e) {
+		// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

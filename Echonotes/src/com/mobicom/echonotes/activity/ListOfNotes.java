@@ -1,72 +1,136 @@
 package com.mobicom.echonotes.activity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import com.mobicom.echonotes.ListModel;
-import com.mobicom.echonotes.R;
-import com.mobicom.echonotes.R.array;
-import com.mobicom.echonotes.R.drawable;
-import com.mobicom.echonotes.R.id;
-import com.mobicom.echonotes.R.layout;
-import com.mobicom.echonotes.R.menu;
-import com.mobicom.echonotes.R.string;
-import com.mobicom.echonotes.adapters.CustomAdapter;
-
-
-import android.os.Bundle;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.SearchView;
+
+import com.mobicom.echonotes.ListModel;
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.adapters.CustomAdapter;
+import com.mobicom.echonotes.data.RecordingSession;
 
 public class ListOfNotes extends Activity {
 
 	ListView list;
-	CustomAdapter adapter;
-	public ArrayList<ListModel> CustomListViewValuesArr = new ArrayList<ListModel>();
+	CustomAdapter adapter; 
+	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
 	private String[] drawerListViewItems;
+	private String[] tagsListViewItems;
 	private DrawerLayout drawerLayout;
 	private ListView drawerListView;
+	private ListView tagsListView;
+	private EditText editSearch;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
 	private ImageButton newNote;
+	private ArrayList<RecordingSession> allNotes;
+	
+	
+	private void openSettings(){
+		Intent intent = new Intent(ListOfNotes.this,Preferences.class);
+		startActivity(intent);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//writeToNoteArray();
 		setContentView(R.layout.list_of_notes);
 
-		setListData();
+		//setListData(allNotes);
+		
+		
+		//Erase from here...
+		ListModel noteListModel = new ListModel();
 
+		noteListModel.setNoteName("ADVSTAT");
+		noteListModel.setNumAnnotations(5);
+		noteListModel.setDateAndTime("10 hours ago");
+
+		noteListModelArray.add(noteListModel);
+		
+		noteListModel = new ListModel();
+		
+		noteListModel.setNoteName("MOBICOM");
+		noteListModel.setNumAnnotations(8);
+		noteListModel.setDateAndTime("10 days ago");
+
+		noteListModelArray.add(noteListModel);
+		
+		noteListModel = new ListModel();
+		
+		noteListModel.setNoteName("COMPILE");
+		noteListModel.setNumAnnotations(20);
+		noteListModel.setDateAndTime("3 days ago");
+
+		noteListModelArray.add(noteListModel);
+		//until here once File Reader has values
+		
+		
 		Resources res = getResources();
 		list = (ListView) findViewById(R.id.noteListView); // List defined in
 															// XML ( See Below )
 
 		/**************** Create Custom Adapter *********/
-		adapter = new CustomAdapter(this, CustomListViewValuesArr, res);
+		adapter = new CustomAdapter(this, noteListModelArray, res);
 		list.setAdapter(adapter);
+		list.setClickable(true);
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView parentView, View childView, int position, long id)
+			{
+				Intent intent = new Intent(ListOfNotes.this,PlayNote.class);
+				startActivity(intent);	
+			}
+		});
 
 		// get list items from strings.xml
 		drawerListViewItems = getResources().getStringArray(R.array.items);
-
+		tagsListViewItems = getResources().getStringArray(R.array.tags);
 		// get ListView defined in activity_main.xml
-		drawerListView = (ListView) findViewById(R.id.left_drawer);
+		drawerListView = (ListView) findViewById(R.id.buttonsListView_gui);
+		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
 
 		// Set the adapter for the list view
 		drawerListView.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.nav_line_item, drawerListViewItems));
-
+		tagsListView.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.nav_line_item, tagsListViewItems));
+		
+		drawerListView.setClickable(true);
+		drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView parentView, View childView, int position, long id)
+			{
+				switch(position){
+				case 0: Intent intent = new Intent(ListOfNotes.this,RecordNote.class);
+						startActivity(intent);
+				}
+			}
+		});
+		
+		
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		actionBarDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
@@ -96,9 +160,16 @@ public class ListOfNotes extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.list_of_notes, menu);
-		menu.findItem(R.id.action_search).getActionView();
-		return super.onCreateOptionsMenu(menu);
+		SearchManager searchManager =
+		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView =
+		            (SearchView) menu.findItem(R.id.action_search).getActionView();
+		    searchView.setSearchableInfo(
+		            searchManager.getSearchableInfo(getComponentName()));
+		return true;
 	}
+	
+	
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -115,7 +186,17 @@ public class ListOfNotes extends Activity {
 		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-		return super.onOptionsItemSelected(item);
+		
+		switch (item.getItemId()) {
+        case R.id.action_search:
+            //openSearch();
+            return true;
+        case R.id.action_settings:
+            openSettings();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+    }
 	}
 
 	@Override
@@ -125,29 +206,67 @@ public class ListOfNotes extends Activity {
 		actionBarDrawerToggle.syncState();
 	}
 
-	public void setListData() {
-
-		for (int i = 0; i < 11; i++) {
-
-			final ListModel sched = new ListModel();
+	public void setListData(ArrayList<RecordingSession> recordArrayList) {
+		
+		
+		
+			for(int i = 0; i<recordArrayList.size();i++){
+			ListModel noteListModel = new ListModel();
 
 			/******* Firstly take data in model object ******/
-			sched.setNoteName("Test Note");
-			sched.setNumAnnotations("2 annotations");
-			sched.setDateAndTime("5 minutes ago");
+			noteListModel.setNoteName(recordArrayList.get(i).getName());
+			noteListModel.setNumAnnotations(recordArrayList.get(i).getAnnotationTimer().size());
+			noteListModel.setDateAndTime(recordArrayList.get(i).getDateModified()+"");
 
-			/******** Take Model Object in ArrayList **********/
-			CustomListViewValuesArr.add(sched);
-		}
+			noteListModelArray.add(noteListModel);
+			}
 
 	}
 
 	public void onItemClick(int mPosition) {
-		ListModel tempValues = (ListModel) CustomListViewValuesArr
-				.get(mPosition);
+		ListModel tempValues = (ListModel) noteListModelArray.get(mPosition);
 
-		// SHOW ALERT
-
-		Toast.makeText(this, "Selected " + mPosition, Toast.LENGTH_LONG).show();
+		Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
+		intent.putExtra("NOTE_NAME",tempValues.getNoteName());
+		intent.putExtra("NUM_ANNOTATIONS",tempValues.getNumAnnotations());
+		startActivity(intent);
+	}
+	
+	public void readFromNoteArray(){
+		BufferedReader reader = null;
+		
+		try{
+			File file = new File(Environment.getExternalStorageDirectory().getPath()+"Echonotes/notes.txt");
+			reader = new BufferedReader(new FileReader(file));
+			
+			String line;
+			int i=0;
+			while((line = reader.readLine()) !=null){
+				allNotes.get(i).setName(reader.readLine());
+				allNotes.get(i).setRecordingFilePath(reader.readLine());
+				allNotes.get(i).setDateModified(reader.readLine());
+				allNotes.get(i).setCategory(reader.readLine());
+				for(int j=0;j<allNotes.get(i).getListOfTextAnnotations().size();j++){
+					allNotes.get(i).getListOfTextAnnotations().add(reader.readLine());
+				}
+				for(int j=0;j<allNotes.get(i).getListOfPicturePathAnnotations().size();j++){
+					allNotes.get(i).getListOfPicturePathAnnotations().add(reader.readLine());
+				}
+				for(int j=0;j<allNotes.get(i).getAnnotationTimer().size();j++){
+				allNotes.get(i).getAnnotationTimer().add(Long.parseLong(reader.readLine()));
+				}
+				i++;
+			}
+			}catch(IOException e){
+				e.printStackTrace();
+			}finally{
+				try{
+					reader.close();
+				}catch(IOException e){
+					e.printStackTrace();
+				}
+			}
+		
+		
 	}
 }

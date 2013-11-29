@@ -25,9 +25,9 @@
                 android:id="@+id/newTextNoteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:scaleType="fitEnd"
-                android:src="@drawable/add_note_annotation" />
+                android:src="@drawable/add_note_annotation"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/newPhotoImageView"
@@ -37,9 +37,9 @@
                 android:src="@drawable/add_picture_annotation" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/recordTimeTextView"
+        
+        <Chronometer
+            android:id="@+id/recordTimeChronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/startRecordImageView"
@@ -54,8 +54,8 @@
             android:id="@+id/numAnnotationsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/recordTimeTextView"
-            android:layout_alignRight="@+id/recordTimeTextView"
+            android:layout_above="@+id/recordTimeChronometer"
+            android:layout_alignRight="@+id/recordTimeChronometer"
             android:fontFamily="sans-serif-light"
             android:text="annotations"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -83,7 +83,7 @@
             android:ems="10"
             android:fontFamily="sans-serif-medium"
             android:gravity="right"
-            android:text="NewNote1"
+            android:hint="New Note"
             android:textColor="#000000"
             android:background="@null"
             android:textSize="22sp" >
@@ -107,5 +107,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     </ListView>
+    
+    <ViewStub android:id="@+id/stub"
+               android:inflatedId="@+id/subTree"
+               android:layout="@layout/text_annotation"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent" />
 
 </LinearLayout>

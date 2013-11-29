@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title = "MAIN">
+        <PreferenceScreen android:title="Microphone Settings" 
+            			  android:summary="Change microphone settings, volume..." >
+            <!-- microphone settings here -->
+            <EditTextPreference android:title="Enter Text"
+                android:key="Text" />
+        </PreferenceScreen>
+        <CheckBoxPreference android:title = "Record even on standby"
+            				android:summary = "@string/record_summary"
+            				android:defaultValue="false"
+            				android:key = "RecordPreference" />"
+    </PreferenceCategory>
+    <PreferenceCategory android:title="MISC">
+        <ListPreference android:title="Sort Echonotes by"
+            android:key="SortPreference" 
+            android:summary="@string/sort_summary" android:entries="@array/sort_options"
+            android:entryValues="@array/sort_options" />
+       <CheckBoxPreference android:defaultValue="false"
+           				   android:title = "Hide Notification"
+           				   android:summary = "@string/notifs_summary"
+           				   android:key="NotifsPreference"/>
+    </PreferenceCategory>
+ 
+    
+</PreferenceScreen>

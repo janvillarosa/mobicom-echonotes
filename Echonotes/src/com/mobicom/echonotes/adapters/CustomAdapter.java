@@ -105,7 +105,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 			/************ Set Model values in Holder elements ***********/
 
 			holder.text.setText(tempValues.getNoteName());
-			holder.text1.setText(tempValues.getNumAnnotations());
+			holder.text1.setText(tempValues.getNumAnnotations()+ " annotations");
 			holder.text2.setText(tempValues.getDateAndTime());
 
 			/******** Set Item Click Listener for LayoutInflater for each row *******/

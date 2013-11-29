@@ -3,7 +3,7 @@ package com.mobicom.echonotes;
 public class ListModel {
 	
 	private  String noteName="";
-    private  String numAnnotations="";
+    private  int numAnnotations;
     private  String dateAndTime="";
     
 	public String getNoteName() {
@@ -12,10 +12,10 @@ public class ListModel {
 	public void setNoteName(String noteName) {
 		this.noteName = noteName;
 	}
-	public String getNumAnnotations() {
+	public int getNumAnnotations() {
 		return numAnnotations;
 	}
-	public void setNumAnnotations(String numAnnotations) {
+	public void setNumAnnotations(int numAnnotations) {
 		this.numAnnotations = numAnnotations;
 	}
 	public String getDateAndTime() {

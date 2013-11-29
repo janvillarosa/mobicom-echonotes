@@ -12,5 +12,18 @@
  
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
+    <string-array name="tags">
+        <item >MOBICOM</item>
+        <item >ADVSTAT</item>
+    </string-array>
+    <string name="search_hint">Search notes</string>
+    <string-array name="sort_options">
+        <item >Last Modified</item>
+        <item >Categories</item>
+        <item >Title</item>
+    </string-array>
+    <string name="sort_summary">Last Modified</string>
+    <string name="record_summary">Echonote will not record if the phone is on standby</string>
+    <string name="notifs_summary">Notifications for Echonote is enabled</string>
 
 </resources>
