@@ -1,19 +1,11 @@
 package com.mobicom.echonotes.data;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.sql.Date;
 import java.util.ArrayList;
 
-import com.mobicom.echonotes.activity.ListOfNotes;
-
-import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
-import android.widget.Toast;
 
 public class RecordingSession {
 	

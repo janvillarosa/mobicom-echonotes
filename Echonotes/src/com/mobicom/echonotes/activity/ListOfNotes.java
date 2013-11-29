@@ -14,7 +14,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.OpenableColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -99,6 +98,7 @@ public class ListOfNotes extends Activity {
 		list.setAdapter(adapter);
 		list.setClickable(true);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
 			public void onItemClick(AdapterView parentView, View childView, int position, long id)
 			{
 				Intent intent = new Intent(ListOfNotes.this,PlayNote.class);
@@ -121,6 +121,7 @@ public class ListOfNotes extends Activity {
 		
 		drawerListView.setClickable(true);
 		drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
 			public void onItemClick(AdapterView parentView, View childView, int position, long id)
 			{
 				switch(position){
@@ -148,6 +149,7 @@ public class ListOfNotes extends Activity {
 		newNote = (ImageButton)findViewById(R.id.newNoteButton);
 		
 		newNote.setOnClickListener(new View.OnClickListener(){
+			@Override
 			public void onClick(View v){
 				Intent intent = new Intent(ListOfNotes.this,RecordNote.class);
 				newNote.setImageResource(R.drawable.newnote_button_pressed);
@@ -224,7 +226,7 @@ public class ListOfNotes extends Activity {
 	}
 
 	public void onItemClick(int mPosition) {
-		ListModel tempValues = (ListModel) noteListModelArray.get(mPosition);
+		ListModel tempValues = noteListModelArray.get(mPosition);
 
 		Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
 		intent.putExtra("NOTE_NAME",tempValues.getNoteName());

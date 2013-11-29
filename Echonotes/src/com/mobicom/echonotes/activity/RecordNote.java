@@ -1,10 +1,14 @@
 package com.mobicom.echonotes.activity;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -14,9 +18,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -37,15 +39,16 @@ public class RecordNote extends Activity {
 	private MediaRecorder mRecorder = null;
 	private ImageView startRecord, newPhoto, newText;
 	private Button saveText, cancelText;
-	private EditText noteName;
+	private EditText noteName, textAnnotation;
 	RecordingSession currentNote;
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
-	private long recordingTimestamp;
 	private ViewStub stub;
 	private Chronometer recordTime;
 	private TextView numAnnotations;
+
+	final Context context = this;
 
 	private Thread recordingThread;
 
@@ -59,12 +62,11 @@ public class RecordNote extends Activity {
 		noteName = (EditText) findViewById(R.id.noteNameEditText);
 		newText = (ImageView) findViewById(R.id.newTextNoteImageView);
 		recordTime = (Chronometer) findViewById(R.id.recordTimeChronometer);
-		numAnnotations = (TextView)findViewById(R.id.numAnnotationsTextView);
+		numAnnotations = (TextView) findViewById(R.id.numAnnotationsTextView);
 
 		newPhoto.setClickable(false);
-		
-		stub = (ViewStub)findViewById(R.id.stub);
-		
+
+		stub = (ViewStub) findViewById(R.id.stub);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setListeners();
@@ -82,13 +84,14 @@ public class RecordNote extends Activity {
 					createDirectory();
 
 					recordingThread = new Thread(new Runnable() {
+						@Override
 						public void run() {
 							startRecording();
 						}
 					});
 
 					recordingThread.start();
-					
+
 					recordTime.setBase(SystemClock.elapsedRealtime());
 					recordTime.start();
 					startRecord.setImageResource(R.drawable.stop_record);
@@ -99,17 +102,38 @@ public class RecordNote extends Activity {
 					startRecord.setImageResource(R.drawable.start_record);
 
 					currentNote.setName(mFileName);
-					currentNote.setRecordingFilePath(path+"/"+ noteName.getText()
-							.toString() + "_main_recording" + ".3gpp");
+					currentNote.setRecordingFilePath(path + "/"
+							+ noteName.getText().toString() + "_main_recording"
+							+ ".3gpp");
 					newPhoto.setClickable(false);
-					
+
 					try {
 						recordingThread.join();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					
-					currentNote.writeMetadata();
+
+					final String[] categories = getResources().getStringArray(
+							R.array.tags);
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							context);
+
+					builder.setTitle("Add to a category");
+					builder.setItems(R.array.tags,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+									currentNote.setCategory(categories[which]);
+									currentNote.writeMetadata();
+									finish();
+
+								}
+							});
+
+					AlertDialog alert = builder.create();
+					alert.show();
 				}
 			}
 		});
@@ -123,7 +147,8 @@ public class RecordNote extends Activity {
 				fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				newPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
-				startActivityForResult(newPhotoIntent,CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+				startActivityForResult(newPhotoIntent,
+						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		});
 
@@ -131,14 +156,30 @@ public class RecordNote extends Activity {
 		newText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
+
 				stub.setVisibility(View.VISIBLE);
 
 				saveText = (Button) findViewById(R.id.saveTextButton);
+				textAnnotation = (EditText) findViewById(R.id.textAnnotationEditText);
 
 				saveText.setOnClickListener(new View.OnClickListener() {
+					@Override
 					public void onClick(View v) {
-						currentNote.getAnnotationTimer().add(annotationTimestamp());
+						try {
+							BufferedWriter out = new BufferedWriter(
+									new FileWriter(path + "/"
+											+ annotationTimestamp() + ".txt",
+											true));
+							out.write(textAnnotation.getText().toString());
+							out.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						currentNote.getListOfTextAnnotations().add(
+								path + "/" + annotationTimestamp() + ".txt");
+						currentNote.getAnnotationTimer().add(
+								annotationTimestamp());
 						stub.setVisibility(View.INVISIBLE);
 					}
 				});
@@ -146,10 +187,11 @@ public class RecordNote extends Activity {
 				cancelText = (Button) findViewById(R.id.cancelTextButton);
 
 				cancelText.setOnClickListener(new View.OnClickListener() {
+					@Override
 					public void onClick(View v) {
-						
+
 						stub.setVisibility(View.INVISIBLE);
-						
+
 					}
 				});
 
@@ -185,7 +227,8 @@ public class RecordNote extends Activity {
 		if (type == MEDIA_TYPE_IMAGE) {
 			mediaFile = new File(path + "/IMG_" + timeStamp + ".jpg");
 
-			currentNote.getListOfPicturePathAnnotations().add(mediaFile.getPath());
+			currentNote.getListOfPicturePathAnnotations().add(
+					mediaFile.getPath());
 		} else {
 			return null;
 		}
@@ -195,8 +238,8 @@ public class RecordNote extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		//MenuInflater inflater = getMenuInflater();
-		//inflater.inflate(R.menu.recording_screen, menu);
+		// MenuInflater inflater = getMenuInflater();
+		// inflater.inflate(R.menu.recording_screen, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -204,11 +247,14 @@ public class RecordNote extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT)
+						.show();
+				
+				
 				currentNote.getAnnotationTimer().add(annotationTimestamp());
-				numAnnotations.setText(currentNote.getAnnotationTimer().size() + " annotations");
+				numAnnotations.setText(currentNote.getAnnotationTimer().size()
+						+ " annotations");
 			} else if (resultCode == RESULT_CANCELED) {
-			} else {
 			}
 		}
 	}
@@ -220,7 +266,8 @@ public class RecordNote extends Activity {
 
 	private void startRecording() {
 
-		File recordingFile = new File(path + "/" + noteName.getText().toString() + "_main_recording" + ".3gp");
+		File recordingFile = new File(path + "/"
+				+ noteName.getText().toString() + "_main_recording" + ".3gp");
 
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

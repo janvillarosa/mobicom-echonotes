@@ -9,13 +9,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,7 +30,8 @@ public class PlayNote extends Activity{
     
     //THREAD
     private Runnable moveSeekBarThread = new Runnable() {
-        public void run() {
+        @Override
+		public void run() {
                 if(mPlayer.isPlaying()){
 
                 int mediaPos_new = mPlayer.getCurrentPosition();
@@ -48,6 +45,7 @@ public class PlayNote extends Activity{
         }
     };
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_screen);
@@ -83,7 +81,8 @@ public class PlayNote extends Activity{
 	
 		
 		playButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            @Override
+			public void onClick(View v) {
             	boolean mStartPlaying = true;
                 onPlay(mStartPlaying);
                 if (mStartPlaying) {
@@ -121,7 +120,8 @@ public class PlayNote extends Activity{
         mPlayer = null;
     }
     
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
         case 0:

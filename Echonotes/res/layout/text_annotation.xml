@@ -11,7 +11,7 @@
         android:background="#ffffff" >
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/textAnnotationEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

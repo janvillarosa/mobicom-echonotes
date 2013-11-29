@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.mobicom.echonotes.ListModel;
 import com.mobicom.echonotes.R;
-import com.mobicom.echonotes.R.id;
-import com.mobicom.echonotes.R.layout;
 import com.mobicom.echonotes.activity.ListOfNotes;
 
 import android.app.Activity;
@@ -45,6 +43,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 	}
 
 	/******** What is the size of Passed Arraylist Size ************/
+	@Override
 	public int getCount() {
 
 		if (data.size() <= 0)
@@ -52,10 +51,12 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 		return data.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return position;
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
@@ -71,6 +72,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 	}
 
 	/****** Depends upon data size called for each row , Create each ListView row *****/
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		View vi = convertView;
@@ -100,7 +102,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 		} else {
 			/***** Get each Model object from Arraylist ********/
 			tempValues = null;
-			tempValues = (ListModel) data.get(position);
+			tempValues = data.get(position);
 
 			/************ Set Model values in Holder elements ***********/
 
