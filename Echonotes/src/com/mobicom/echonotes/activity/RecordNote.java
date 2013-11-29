@@ -42,10 +42,7 @@ public class RecordNote extends Activity {
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
-<<<<<<< HEAD
-=======
 	private long recordingTimestamp;
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
 	private ViewStub stub;
 	private Chronometer recordTime;
 	private TextView numAnnotations;
@@ -66,14 +63,8 @@ public class RecordNote extends Activity {
 
 		newPhoto.setClickable(false);
 		
-		stub = (ViewStub) findViewById(R.id.stub);
-		stub.setVisibility(View.INVISIBLE);
-		//stub.inflate();
-<<<<<<< HEAD
-=======
-
-		createDirectory();
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
+		stub = (ViewStub)findViewById(R.id.stub);
+		
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setListeners();
@@ -88,13 +79,9 @@ public class RecordNote extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (!isRecording) {
-<<<<<<< HEAD
 					createDirectory();
+
 					recordingThread = new Thread(new Runnable() {
-						@Override
-=======
-					recordingThread = new Thread(new Runnable() {
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
 						public void run() {
 							startRecording();
 						}
@@ -150,26 +137,19 @@ public class RecordNote extends Activity {
 				saveText = (Button) findViewById(R.id.saveTextButton);
 
 				saveText.setOnClickListener(new View.OnClickListener() {
-<<<<<<< HEAD
-					@Override
 					public void onClick(View v) {
 						currentNote.getAnnotationTimer().add(annotationTimestamp());
-=======
-					public void onClick(View v) {
-						currentNote.getAnnotationCounter().add(annotationTimestamp());
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
+						stub.setVisibility(View.INVISIBLE);
 					}
 				});
 
 				cancelText = (Button) findViewById(R.id.cancelTextButton);
 
 				cancelText.setOnClickListener(new View.OnClickListener() {
-<<<<<<< HEAD
-					@Override
-=======
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
 					public void onClick(View v) {
+						
 						stub.setVisibility(View.INVISIBLE);
+						
 					}
 				});
 
@@ -225,13 +205,8 @@ public class RecordNote extends Activity {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT).show();
-<<<<<<< HEAD
 				currentNote.getAnnotationTimer().add(annotationTimestamp());
 				numAnnotations.setText(currentNote.getAnnotationTimer().size() + " annotations");
-=======
-				currentNote.getAnnotationCounter().add(annotationTimestamp());
-				numAnnotations.setText(currentNote.getAnnotationCounter().size() + " annotations");
->>>>>>> e44cb77c629a3cb75540720b543432fc3c4b2b0f
 			} else if (resultCode == RESULT_CANCELED) {
 			} else {
 			}

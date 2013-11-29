@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
     <RelativeLayout
         android:id="@+id/imageButtonContainer"
@@ -25,25 +24,23 @@
                 android:id="@+id/newTextNoteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:scaleType="fitEnd"
-                android:src="@drawable/add_note_annotation"
-                android:layout_weight="1" />
+                android:src="@drawable/add_note_annotation" />
 
             <ImageView
                 android:id="@+id/newPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitEnd"
-                android:src="@drawable/add_picture_annotation" 
-                android:layout_weight="1" />
-
+                android:src="@drawable/add_picture_annotation" />
         </LinearLayout>
-        
+
         <Chronometer
             android:id="@+id/recordTimeChronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/playRecordingImageView"
+            android:layout_alignBottom="@+id/startRecordImageView"
             android:layout_alignParentRight="true"
             android:layout_marginRight="11dp"
             android:fontFamily="sans-serif-light"
@@ -80,16 +77,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/numAnnotationsTextView"
-            android:layout_alignTop="@+id/playRecordingImageView"
+            android:layout_alignTop="@+id/startRecordImageView"
+            android:background="@null"
             android:ems="10"
             android:fontFamily="sans-serif-medium"
             android:gravity="right"
             android:hint="New Note"
             android:textColor="#000000"
-            android:background="@null"
             android:textSize="22sp" >
-
-            <requestFocus />
         </EditText>
 
         <ImageView
@@ -98,21 +93,15 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/buttonLayout"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom = "5dp"
+            android:layout_marginBottom="5dp"
             android:src="@drawable/recording_separator" />
-
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listView1"
+    <ViewStub
+        android:id="@+id/stub"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
-    
-    <ViewStub android:id="@+id/stub"
-               android:inflatedId="@+id/subTree"
-               android:layout="@layout/text_annotation"
-               android:layout_width="fill_parent"
-               android:layout_height="fill_parent" />
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/subTree"
+        android:layout="@layout/text_annotation" />
 
-</LinearLayout>
+</RelativeLayout>

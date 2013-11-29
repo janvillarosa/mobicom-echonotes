@@ -106,7 +106,6 @@ public class RecordingSession {
 	public void writeMetadata(){
 		
 		try {
-			Toast.makeText(null, "didn't write", Toast.LENGTH_LONG).show();
 		    BufferedWriter out = new BufferedWriter(new FileWriter(Environment.getExternalStorageDirectory().getPath()+"/Echonotes/notes.txt", true));
 			out.write(name+"\n");
 			out.write(recordingFilePath+"\n");

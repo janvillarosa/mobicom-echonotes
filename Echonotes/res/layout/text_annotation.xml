@@ -4,29 +4,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/saveTextButton"
-        style="?android:attr/buttonStyleSmall"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Save" />
+        android:layout_height="0dp"
+        android:layout_weight="0.31"
+        android:background="#ffffff" >
 
-    <Button
-        android:id="@+id/cancelTextButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel" />
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/cancelTextButton"
+            android:ems="10"
+            android:gravity="top"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:fontFamily="serif"
+            android:hint="Enter your annotation"
+            android:inputType="textMultiLine" >
 
-    <EditText
-        android:id="@+id/newTextNoteEditText"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top"
-        android:hint="Enter your annotation"
-        android:fontFamily="serif"
-        android:textColor="#000000"
-        android:ems="10"
-        android:inputType="textMultiLine" />
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/cancelTextButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/cancelTextButton"
+            android:layout_alignBottom="@+id/cancelTextButton"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="Cancel"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/saveTextButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toLeftOf="@+id/saveTextButton"
+            android:textColor="#000000"
+            android:text="Save" />
+
+    </RelativeLayout>
 
 </LinearLayout>

@@ -11,7 +11,7 @@ public class Preferences extends PreferenceActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_DarkText);
+        setTheme(R.style.AppBaseTheme);
         addPreferencesFromResource(R.xml.preference);
         PreferenceManager.setDefaultValues(Preferences.this, R.xml.preference, false);
     }
