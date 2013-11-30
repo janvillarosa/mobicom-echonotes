@@ -1,6 +1,6 @@
 package com.mobicom.echonotes.activity;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.mobicom.echonotes.ListModel;
+import com.mobicom.echonotes.NavBarListModel;
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.adapters.CustomAdapter;
 import com.mobicom.echonotes.data.RecordingSession;
@@ -37,6 +38,8 @@ public class ListOfNotes extends Activity {
 	ListView list;
 	CustomAdapter adapter; 
 	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
+	public ArrayList<NavBarListModel> navButtonListModelArray = new ArrayList<NavBarListModel>();
+	public ArrayList<NavBarListModel> navTagsListModelArray = new ArrayList<NavBarListModel>();
 	private String[] drawerListViewItems;
 	private String[] tagsListViewItems;
 	private DrawerLayout drawerLayout;
@@ -59,10 +62,6 @@ public class ListOfNotes extends Activity {
 		//writeToNoteArray();
 		setContentView(R.layout.list_of_notes);
 
-		//setListData(allNotes);
-		
-		
-		//Erase from here...
 		ListModel noteListModel = new ListModel();
 
 		noteListModel.setNoteName("ADVSTAT");
@@ -114,8 +113,7 @@ public class ListOfNotes extends Activity {
 		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
 
 		// Set the adapter for the list view
-		drawerListView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.nav_line_item, drawerListViewItems));
+		//drawerListView.setAdapter(new NavBarListAdapter(this, navButtonListModelArray, res));
 		tagsListView.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.nav_line_item, tagsListViewItems));
 		

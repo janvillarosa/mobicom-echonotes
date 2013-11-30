@@ -26,26 +26,16 @@ public class PlayNote extends Activity {
 	private SeekBar seekbar;
 	private int numAnnotations;
 	private ImageView image;
-	private RecordingSession currentNote;
 	private boolean mStartPlaying = true;
 	private Handler handler = new Handler();
 	private boolean playStart = false;
 
 	// THREAD
-	private Runnable moveSeekBarThread = new Runnable() {
+	private Runnable moveSeekBarRunnable = new Runnable() {
 		@Override
 		public void run() {
-			if (mPlayer.isPlaying()) {
-
-				int mediaPos_new = mPlayer.getCurrentPosition();
-				int mediaMax_new = mPlayer.getDuration();
-
-				seekbar.setMax(mediaMax_new);
-				seekbar.setProgress(mediaPos_new);
-
-				handler.postDelayed(this, 100);
-			}
-
+			seekbar.setProgress(mPlayer.getCurrentPosition());
+			handler.postDelayed(moveSeekBarRunnable, 100);
 		}
 	};
 
@@ -58,7 +48,6 @@ public class PlayNote extends Activity {
 		seekbar = (SeekBar) findViewById(R.id.seekBar1);
 		noteNameTextView = (TextView) findViewById(R.id.noteNameTextView);
 		numAnnotationsTextView = (TextView) findViewById(R.id.numAnnotations);
-		currentNote = new RecordingSession();
 		mPlayer = new MediaPlayer();
 
 		Bundle extras;
@@ -79,13 +68,36 @@ public class PlayNote extends Activity {
 			numAnnotationsTextView.setText(numAnnotations + " annotations");
 		}
 
-		/*
-		 * seekbar.setMax(mediaMax); // Set the Maximum range of the
-		 * seekbar.setProgress(mediaPos);// set current progress to song's
-		 * 
-		 * handler.removeCallbacks(moveSeekBarThread);
-		 * handler.postDelayed(moveSeekBarThread, 100);
-		 */
+		seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				// TODO Auto-generated method stub
+				if (fromUser) {
+					mPlayer.seekTo(progress);
+					seekbar.setProgress(progress);
+				} else {
+					//System.out.println("SeekBar value is " +progress);
+					seekbar.setProgress(mPlayer.getCurrentPosition());
+					//System.out.println(mPlayer.getCurrentPosition());
+				}
+			}
+		});
+
+		handler.removeCallbacks(moveSeekBarRunnable);
 
 		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -119,6 +131,12 @@ public class PlayNote extends Activity {
 						+ "/" + noteNameTextView.getText().toString()
 						+ "_main_recording.3gp");
 				mPlayer.prepare();
+
+				seekbar.setProgress(0);
+				seekbar.setMax(mPlayer.getDuration());
+
+				handler.post(moveSeekBarRunnable);
+
 				mPlayer.start();
 				playStart = true;
 			} catch (IOException e) {

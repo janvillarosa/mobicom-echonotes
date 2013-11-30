@@ -26,8 +26,4 @@
         <item>Title</item>
     </string-array>
 
-    <string name="sort_summary">Last Modified</string>
-    <string name="record_summary">Echonote will not record if the phone is on standby</string>
-    <string name="notifs_summary">Notifications for Echonote is enabled</string>
-
 </resources>
