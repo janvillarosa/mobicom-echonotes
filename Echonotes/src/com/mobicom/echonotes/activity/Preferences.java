@@ -35,7 +35,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         PreferenceManager.setDefaultValues(Preferences.this, R.xml.preference, false);
         Preference connectionPref = findPreference("RecordPreference");
         if(((CheckBoxPreference)connectionPref).isChecked())
-			connectionPref.setSummary("Echonotes will record even when the phone is on standby");
+			connectionPref.setSummary("Echonotes will record when the phone is on standby");
 		else{
 			connectionPref.setSummary("Echonotes will not record when the phone is on standby");
 		}

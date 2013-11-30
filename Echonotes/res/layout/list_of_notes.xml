@@ -13,12 +13,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ScrollView
-                android:id="@+id/scrollView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.98" >
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -45,12 +39,11 @@
                     <ListView
                         android:id="@+id/noteListView"
                         android:layout_width="match_parent"
-                        android:layout_height="395dp"
+                        android:layout_height="fill_parent"
                         android:divider="@android:color/transparent"
                         android:dividerHeight="0dp" >
                     </ListView>
                 </LinearLayout>
-            </ScrollView>
         </FrameLayout>
 
         <!-- The navigation drawer -->
@@ -69,13 +62,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:text="ECHONOTES"
+        android:text="YOUR ECHONOTES"
         android:textColor="@color/main_color"
         android:textStyle="bold"
         />	
         
     <View
-    android:layout_width="200dp"
+    android:layout_width="match_parent"
     android:layout_height="1dp"
     android:paddingLeft="10dip"
     android:background="@color/main_color"/>
@@ -85,25 +78,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-		android:dividerHeight="0dp"
+        android:divider="@drawable/list_divider"
+		android:dividerHeight="1px"
         android:background="#ffffff"/>
 
     
     <TextView
         android:id="@+id/echoNotesTextView"
-        android:paddingLeft="10dip"
-        android:paddingTop="10dip"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:text="TAGS"
+        android:text="MY TAGS"
         android:textColor="@color/main_color"
         android:textStyle="bold"
         />
     
     <View
-    android:layout_width="200dp"
+    android:layout_width="match_parent"
     android:paddingLeft="10dip"
     android:layout_height="1dp"
     android:background="@color/main_color"/>
