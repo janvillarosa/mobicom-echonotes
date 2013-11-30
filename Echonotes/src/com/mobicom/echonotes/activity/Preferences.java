@@ -2,7 +2,6 @@ package com.mobicom.echonotes.activity;
 
 import com.mobicom.echonotes.R;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;

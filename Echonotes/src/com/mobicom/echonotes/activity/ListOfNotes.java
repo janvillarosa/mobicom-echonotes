@@ -1,6 +1,6 @@
 package com.mobicom.echonotes.activity;
 
-import java.io.BufferedReader; 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,13 +22,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.mobicom.echonotes.ListModel;
-import com.mobicom.echonotes.NavBarListModel;
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.adapters.CustomAdapter;
 import com.mobicom.echonotes.data.RecordingSession;
@@ -38,14 +36,11 @@ public class ListOfNotes extends Activity {
 	ListView list;
 	CustomAdapter adapter; 
 	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
-	public ArrayList<NavBarListModel> navButtonListModelArray = new ArrayList<NavBarListModel>();
-	public ArrayList<NavBarListModel> navTagsListModelArray = new ArrayList<NavBarListModel>();
 	private String[] drawerListViewItems;
 	private String[] tagsListViewItems;
 	private DrawerLayout drawerLayout;
 	private ListView drawerListView;
 	private ListView tagsListView;
-	private EditText editSearch;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
 	private ImageButton newNote;
 	private ArrayList<RecordingSession> allNotes;
@@ -113,9 +108,9 @@ public class ListOfNotes extends Activity {
 		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
 
 		// Set the adapter for the list view
-		//drawerListView.setAdapter(new NavBarListAdapter(this, navButtonListModelArray, res));
+		drawerListView.setAdapter(new ArrayAdapter<String>(this, R.layout.navdrawer_list_item, drawerListViewItems));
 		tagsListView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.nav_line_item, tagsListViewItems));
+				R.layout.navdrawer_list_item, tagsListViewItems));
 		
 		drawerListView.setClickable(true);
 		drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

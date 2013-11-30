@@ -122,6 +122,7 @@ public class RecordNote extends Activity {
 					builder.setTitle("Add to a category");
 					builder.setItems(R.array.tags,
 							new DialogInterface.OnClickListener() {
+								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
 

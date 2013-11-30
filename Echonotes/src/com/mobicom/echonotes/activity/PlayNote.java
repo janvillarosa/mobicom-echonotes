@@ -3,8 +3,6 @@ package com.mobicom.echonotes.activity;
 import java.io.IOException;
 
 import com.mobicom.echonotes.R;
-import com.mobicom.echonotes.data.RecordingSession;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,7 +28,6 @@ public class PlayNote extends Activity {
 	private Handler handler = new Handler();
 	private boolean playStart = false;
 
-	// THREAD
 	private Runnable moveSeekBarRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -90,9 +87,7 @@ public class PlayNote extends Activity {
 					mPlayer.seekTo(progress);
 					seekbar.setProgress(progress);
 				} else {
-					//System.out.println("SeekBar value is " +progress);
 					seekbar.setProgress(mPlayer.getCurrentPosition());
-					//System.out.println(mPlayer.getCurrentPosition());
 				}
 			}
 		});
