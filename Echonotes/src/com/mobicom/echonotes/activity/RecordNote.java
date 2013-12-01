@@ -36,7 +36,7 @@ import com.mobicom.echonotes.database.Tag;
 
 public class RecordNote extends Activity {
 
-	private static String mFileName, path;
+	private static String path;
 	private boolean isRecording = false;
 
 	private Uri fileUri;
@@ -112,7 +112,7 @@ public class RecordNote extends Activity {
 					recordTime.stop();
 					startRecord.setImageResource(R.drawable.start_record);
 
-					currentNote.setName(mFileName);
+					currentNote.setName(noteName.getText().toString());
 					currentNote.setRecordingFilePath(path + "/"
 							+ noteName.getText().toString() + "_main_recording"
 							+ ".3gpp");
@@ -196,11 +196,10 @@ public class RecordNote extends Activity {
 						}
 						currentNote.getListOfTextAnnotations().add(
 								path + "/" + timeStamp + ".txt");
-						currentNote.getAnnotationTimer().add(
-								timeStamp);
-						Annotation annotation = new Annotation("note",currentNote.getListOfTextAnnotations().get(currentNote.getListOfTextAnnotations().size()-1),
+						Annotation annotation = new Annotation("text",currentNote.getListOfTextAnnotations().get(currentNote.getListOfTextAnnotations().size()-1),
 																" "+timeStamp);
-						annotation_id = db.createAnnotation(annotation);
+						annotation_id = db.createAnnotation(annotation,note_id);
+						
 						db.createNoteAnnotation(note_id, annotation_id);
 						stub.setVisibility(View.INVISIBLE);
 					}
@@ -253,7 +252,7 @@ public class RecordNote extends Activity {
 					mediaFile.getPath());
 			Annotation annotation = new Annotation("image",currentNote.getListOfPicturePathAnnotations().get(currentNote.getListOfPicturePathAnnotations().size()-1),
 													""+ timeStamp);
-			annotation_id = db.createAnnotation(annotation);
+			annotation_id = db.createAnnotation(annotation,note_id);
 			db.createNoteAnnotation(note_id, annotation_id);
 		} else {
 			return null;

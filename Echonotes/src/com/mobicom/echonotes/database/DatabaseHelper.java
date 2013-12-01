@@ -69,7 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_ANNOTATIONS = "CREATE TABLE "
             + TABLE_ANNOTATIONS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_TIME + " TEXT," + KEY_TYPE + " INTEGER,"
-            + KEY_FILE_PATH + " TEXT" + ")";
+            + KEY_FILE_PATH + " TEXT," + KEY_NOTE_ID + " INTEGER" + ")";
     
     // Notes and Tags table create statement
     private static final String CREATE_TABLE_NOTES_TAGS = "CREATE TABLE "
@@ -137,13 +137,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return tag_id;
     }
     
-    public long createAnnotation(Annotation annotation){
+    public long createAnnotation(Annotation annotation, Long note_id){
     	SQLiteDatabase db = this.getWritableDatabase();
     	
     	ContentValues values = new ContentValues();
     	values.put(KEY_TIME, annotation.getAnnotationTimeStamp());
     	values.put(KEY_TYPE, annotation.getAnnotationType());
     	values.put(KEY_FILE_PATH, annotation.getAnnotationFilePath());
+    	values.put(KEY_NOTE_ID, note_id);
     	
     	long tag_id = db.insert(TABLE_ANNOTATIONS, null, values);
     	
@@ -291,13 +292,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return annotations;
     }
     
-    public ArrayList<Annotation> getAnnotationsOfNote(String note_name){
+    public ArrayList<Annotation> getAnnotationsOfNote(long noteId){
     	ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " tn, "
-                + TABLE_ANNOTATIONS + " ta, " + TABLE_NOTES_ANNOTATIONS + " tna WHERE tn."
-                + KEY_NAME + " = '" + note_name + "'" + " AND ta." + KEY_ID
-                + " = " + "tna." + KEY_ANNOTATION_ID + " AND tn." + KEY_ID + " = "
-                + "tna." + KEY_NOTE_ID;
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTES_ANNOTATIONS + " WHERE " + KEY_NOTE_ID + " = " + noteId;
+ 
         Log.e(LOG, selectQuery); //MARKER FOR CHECKING
  
         SQLiteDatabase db = this.getReadableDatabase();
@@ -312,7 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 a.setAnnotationType(c.getString(c.getColumnIndex(KEY_TYPE)));
                 a.setAnnotationFilePath(c.getString(c.getColumnIndex(KEY_FILE_PATH)));
                 Log.d("Annotation stamp",a.getAnnotationTimeStamp()+""); //DISPLAYS IN LOG FOR VERIFICATION
-                Log.d("Annotation Type", a.getAnnotationType());//DISPLAYS IN LOG FOR VERIFICATION
+                Log.d("Annotation Type", a.getAnnotationType()+"");//DISPLAYS IN LOG FOR VERIFICATION
                 Log.d("Annotation id", a.getAnnotationId()+""); //DISPLAYS IN LOG FOR VERIFICATION
  
                 // adding to tags list
@@ -322,13 +320,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return annotations;
     }
     
-    public ArrayList<Note> getNotesofTag(String note_name){
+    public ArrayList<Note> getNotesofTag(long tagId){
     	ArrayList<Note> notes = new ArrayList<Note>();
-    	 String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " tn, "
-                 + TABLE_TAGS + " tt, " + TABLE_NOTES_TAGS + " tnt WHERE tn."
-                 + KEY_NAME + " = '" + note_name + "'" + " AND tt." + KEY_ID
-                 + " = " + "tnt." + KEY_TAG_ID + " AND tn." + KEY_ID + " = "
-                 + "tnt." + KEY_NOTE_ID;
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTES_TAGS + " WHERE " + KEY_TAG_ID + " = " + tagId;
  
         Log.e(LOG, selectQuery); //MARKER FOR CHECKING
  
@@ -441,7 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // delete all annotations
         for (Annotation annotation: allAnnotations) {
             // delete annotation
-            deleteNote(annotation.getAnnotationId());
+            deleteAnnotation(annotation.getAnnotationId());
         }
     }
     
@@ -451,7 +445,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // delete all annotations
         for (Tag tag: allTags) {
             // delete annotation
-            deleteNote(tag.getTagId());
+            deleteTag(tag.getTagId());
         }
     }
     
