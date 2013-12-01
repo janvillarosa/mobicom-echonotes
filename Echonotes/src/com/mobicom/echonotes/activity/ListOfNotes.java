@@ -62,59 +62,76 @@ public class ListOfNotes extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
-
-		// database stuff sample
+		
+		//database stuff sample
 		db = new DatabaseHelper(getApplicationContext());
-		db.deleteAllAnnotations();
-		db.deleteAllNotes();
-		db.deleteAllTags();
-
-		// Creating notes
-		Note note1 = new Note("MOBICOM", "Mobicom/path", "3 days ago");
-		Note note2 = new Note("ADVSTAT", "Advstat/path", "4 days ago");
-		Note note3 = new Note("COMPILE", "Compile/path", "5 minutes ago");
-		Note note4 = new Note("ENGLRES", "Englres/path", "a while ago");
-
-		// Inserting tags in db
-
-		/*
-		 * long note1_id = db.createNote(note1); long annotation1_id =
-		 * db.createAnnotation(annotation1); db.createNoteAnnotation(note1_id,
-		 * annotation1_id); Log.d("Note id Ann id",
-		 * note1_id+" "+annotation1_id+""); //DISPLAYS IN LOG FOR VERIFICATION
-		 * 
-		 * long note2_id = db.createNote(note2); long note3_id =
-		 * db.createNote(note3); long note4_id = db.createNote(note4);
+		 
+        // Creating notes
+        Note note1 = new Note("MOBICOM","Mobicom/path", "3 days ago");
+        Note note2 = new Note("ADVSTAT","Advstat/path", "4 days ago");
+        Note note3 = new Note("COMPILE","Compile/path", "5 minutes ago");
+        Note note4 = new Note("ENGLRES","Englres/path", "a while ago");
+        
+        Annotation annotation1 = new Annotation("Image","Mobicom/path/image","3:00:00");
+ 
+        // Inserting tags in db
+        long note1_id = db.createNote(note1);
+        long annotation1_id = db.createAnnotation(annotation1);
+        db.createNoteAnnotation(note1_id, annotation1_id);
+        Log.d("Note id Ann id", note1_id+" "+annotation1_id+""); //DISPLAYS IN LOG FOR VERIFICATION
+        long note2_id = db.createNote(note2);
+        long note3_id = db.createNote(note3);
+        long note4_id = db.createNote(note4);
+        
+        
+        
+		/*public List<Todo> getAllToDosByTag(String tag_name) {
+        List<Todo> todos = new ArrayList<Todo>();
+ 
+        String selectQuery = "SELECT  * FROM " + TABLE_TODO + " td, "
+                + TABLE_TAG + " tg, " + TABLE_TODO_TAG + " tt WHERE tg."
+                + KEY_TAG_NAME + " = '" + tag_name + "'" + " AND tg." + KEY_ID
+                + " = " + "tt." + KEY_TAG_ID + " AND td." + KEY_ID + " = "
+                + "tt." + KEY_TODO_ID;
+ 
+        Log.e(LOG, selectQuery);
+ 
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+ 
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Todo td = new Todo();
+                td.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                td.setNote((c.getString(c.getColumnIndex(KEY_TODO))));
+                td.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+ 
+                // adding to todo list
+                todos.add(td);
+            } while (c.moveToNext());
+        }
+ 
+        return todos;
+    }
 		 */
 
-		/*
-		 * public List<Todo> getAllToDosByTag(String tag_name) { List<Todo>
-		 * todos = new ArrayList<Todo>();
-		 * 
-		 * String selectQuery = "SELECT  * FROM " + TABLE_TODO + " td, " +
-		 * TABLE_TAG + " tg, " + TABLE_TODO_TAG + " tt WHERE tg." + KEY_TAG_NAME
-		 * + " = '" + tag_name + "'" + " AND tg." + KEY_ID + " = " + "tt." +
-		 * KEY_TAG_ID + " AND td." + KEY_ID + " = " + "tt." + KEY_TODO_ID;
-		 * 
-		 * Log.e(LOG, selectQuery);
-		 * 
-		 * SQLiteDatabase db = this.getReadableDatabase(); Cursor c =
-		 * db.rawQuery(selectQuery, null);
-		 * 
-		 * // looping through all rows and adding to list if (c.moveToFirst()) {
-		 * do { Todo td = new Todo();
-		 * td.setId(c.getInt((c.getColumnIndex(KEY_ID))));
-		 * td.setNote((c.getString(c.getColumnIndex(KEY_TODO))));
-		 * td.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
-		 * 
-		 * // adding to todo list todos.add(td); } while (c.moveToNext()); }
-		 * 
-		 * return todos; }
-		 */
-
+		Resources res = getResources();
 		list = (ListView) findViewById(R.id.noteListView); // List defined in
 															// XML ( See Below )
-		initializeNoteList();
+
+		/**************** Create Custom Adapter *********/
+		adapter = new CustomAdapter(this, noteListModelArray, res);
+		list.setAdapter(adapter);
+		list.setClickable(true);
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView parentView, View childView,
+					int position, long id) {
+				Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
+				startActivity(intent);
+			}
+		});
 
 		// get list items from strings.xml
 		drawerListViewItems = getResources().getStringArray(R.array.items);
@@ -169,77 +186,35 @@ public class ListOfNotes extends Activity {
 			}
 		});
 	}
-
-	public void onResume() {
+	
+	public void onResume(){
 		super.onResume();
-		initializeNoteList();
-	}
-	
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		db.closeDB();
-	}
-	
-	private void initializeNoteList(){
-		noteListModelArray.clear();
 		ListModel noteListModel = new ListModel();
-		Note note;
-		int an = 0;
-		
-
-		List<Note> allNotes = db.getAllNotes();
-		List<Annotation> anno = db.getAllAnnotations();
-		for (int i=0; i < allNotes.size(); i++) {
-			note = allNotes.get(i);
-			
-			noteListModel = new ListModel();
-			
-			try{
-			an = db.getAnnotationsOfNote(i+1).size();
-			} catch(Exception e){
-				an = 0;
-			}
+        int an = 0;
+        
+        List<Note> allNotes = db.getAllNotes();
+        for (Note note : allNotes) {
+        	noteListModel = new ListModel();
+        	an = db.getAnnotationsOfNote(note.getNoteName()).size();
 
 			noteListModel.setNoteName(note.getNoteName());
-			noteListModel.setNumAnnotations(/*
-											 * db.getAnnotationsOfNote(note.
-											 * getNoteId()).size()
-											 */an);
+			noteListModel.setNumAnnotations(an);
 			noteListModel.setDateAndTime(note.getDateModified());
 			noteListModelArray.add(noteListModel);
-			Log.d("Note Name", note.getNoteName() + ""); // DISPLAYS IN LOG FOR
-															// VERIFICATION
-			Log.d("Note Annotations", an + "");// DISPLAYS IN LOG FOR
-												// VERIFICATION
-			Log.d("Note id", note.getNoteId() + ""); // DISPLAYS IN LOG FOR
-														// VERIFICATION
-			
-			Log.d("Note id Ann id ", anno.get(i).getAnnotationFilePath()+"");
-
-		}
-
-		Log.d("Note Count", "Note Count: " + db.getAllNotes().size()); // DISPLAYS
-																		// IN
-																		// LOG
-																		// FOR
-																		// VERIFICATION
+            Log.d("Note Name", note.getNoteName()+""); //DISPLAYS IN LOG FOR VERIFICATION
+            Log.d("Note Annotations", an+"");//DISPLAYS IN LOG FOR VERIFICATION
+            Log.d("Note id", note.getNoteId()+""); //DISPLAYS IN LOG FOR VERIFICATION           
+            
+        }
+ 
+        Log.d("Note Count", "Note Count: " + db.getAllNotes().size()); //DISPLAYS IN LOG FOR VERIFICATION
 		
-		if (noteListModelArray.size() != 0) {
-			adapter = new CustomAdapter(this, noteListModelArray, getResources());
-			list.setAdapter(adapter);
-		}
-
-		list.setClickable(true);
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView parentView, View childView,
-					int position, long id) {
-				Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
-				startActivity(intent);
-			}
-		});
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		db.closeDB();
 	}
 
 	@Override
@@ -263,6 +238,9 @@ public class ListOfNotes extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
+		// call ActionBarDrawerToggle.onOptionsItemSelected(), if it returns
+		// true
+		// then it has handled the app icon touch event
 		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
@@ -312,4 +290,46 @@ public class ListOfNotes extends Activity {
 		startActivity(intent);
 	}
 
+	public void readFromNoteArray() {
+		BufferedReader reader = null;
+
+		try {
+			File file = new File(Environment.getExternalStorageDirectory()
+					.getPath() + "Echonotes/notes.txt");
+			reader = new BufferedReader(new FileReader(file));
+
+			String line;
+			int i = 0;
+			while ((line = reader.readLine()) != null) {
+				allNotes.get(i).setName(reader.readLine());
+				allNotes.get(i).setRecordingFilePath(reader.readLine());
+				allNotes.get(i).setDateModified(reader.readLine());
+				allNotes.get(i).setCategory(reader.readLine());
+				for (int j = 0; j < allNotes.get(i).getListOfTextAnnotations()
+						.size(); j++) {
+					allNotes.get(i).getListOfTextAnnotations()
+							.add(reader.readLine());
+				}
+				for (int j = 0; j < allNotes.get(i)
+						.getListOfPicturePathAnnotations().size(); j++) {
+					allNotes.get(i).getListOfPicturePathAnnotations()
+							.add(reader.readLine());
+				}
+				for (int j = 0; j < allNotes.get(i).getAnnotationTimer().size(); j++) {
+					allNotes.get(i).getAnnotationTimer()
+							.add(Long.parseLong(reader.readLine()));
+				}
+				i++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
 }
