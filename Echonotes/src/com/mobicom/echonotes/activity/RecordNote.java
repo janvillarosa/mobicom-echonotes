@@ -29,10 +29,14 @@ import android.widget.Toast;
 
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.data.RecordingSession;
+import com.mobicom.echonotes.database.Annotation;
+import com.mobicom.echonotes.database.DatabaseHelper;
+import com.mobicom.echonotes.database.Note;
+import com.mobicom.echonotes.database.Tag;
 
 public class RecordNote extends Activity {
 
-	private static String mFileName, path;
+	private static String path;
 	private boolean isRecording = false;
 
 	private Uri fileUri;
@@ -51,6 +55,11 @@ public class RecordNote extends Activity {
 	final Context context = this;
 
 	private Thread recordingThread;
+	
+	private DatabaseHelper db;
+	private long note_id;
+	private long tag_id;
+	private long annotation_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +81,8 @@ public class RecordNote extends Activity {
 		setListeners();
 
 		currentNote = new RecordingSession();
+		
+		db = new DatabaseHelper(getApplicationContext());
 
 	}
 
@@ -101,10 +112,12 @@ public class RecordNote extends Activity {
 					recordTime.stop();
 					startRecord.setImageResource(R.drawable.start_record);
 
-					currentNote.setName(mFileName);
+					currentNote.setName(noteName.getText().toString());
 					currentNote.setRecordingFilePath(path + "/"
 							+ noteName.getText().toString() + "_main_recording"
 							+ ".3gpp");
+					Note note = new Note(currentNote.getName(),currentNote.getRecordingFilePath(),db.getDateTime());
+					note_id = db.createNote(note);
 					newPhoto.setClickable(false);
 
 					try {
@@ -127,6 +140,9 @@ public class RecordNote extends Activity {
 										int which) {
 
 									currentNote.setCategory(categories[which]);
+									Tag tag = new Tag();
+									tag_id = db.createTag(tag);
+									db.createNoteTag(note_id, tag_id);
 									currentNote.writeMetadata();
 									finish();
 
@@ -166,10 +182,11 @@ public class RecordNote extends Activity {
 				saveText.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						long timeStamp = annotationTimestamp();
 						try {
 							BufferedWriter out = new BufferedWriter(
 									new FileWriter(path + "/"
-											+ annotationTimestamp() + ".txt",
+											+ timeStamp + ".txt",
 											true));
 							out.write(textAnnotation.getText().toString());
 							out.close();
@@ -178,9 +195,12 @@ public class RecordNote extends Activity {
 							e.printStackTrace();
 						}
 						currentNote.getListOfTextAnnotations().add(
-								path + "/" + annotationTimestamp() + ".txt");
-						currentNote.getAnnotationTimer().add(
-								annotationTimestamp());
+								path + "/" + timeStamp + ".txt");
+						Annotation annotation = new Annotation("text",currentNote.getListOfTextAnnotations().get(currentNote.getListOfTextAnnotations().size()-1),
+																" "+timeStamp);
+						annotation_id = db.createAnnotation(annotation,note_id);
+						
+						db.createNoteAnnotation(note_id, annotation_id);
 						stub.setVisibility(View.INVISIBLE);
 					}
 				});
@@ -230,6 +250,10 @@ public class RecordNote extends Activity {
 
 			currentNote.getListOfPicturePathAnnotations().add(
 					mediaFile.getPath());
+			Annotation annotation = new Annotation("image",currentNote.getListOfPicturePathAnnotations().get(currentNote.getListOfPicturePathAnnotations().size()-1),
+													""+ timeStamp);
+			annotation_id = db.createAnnotation(annotation,note_id);
+			db.createNoteAnnotation(note_id, annotation_id);
 		} else {
 			return null;
 		}

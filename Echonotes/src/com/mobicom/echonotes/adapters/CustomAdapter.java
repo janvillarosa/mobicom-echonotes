@@ -97,7 +97,6 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 			holder = (ViewHolder) vi.getTag();
 
 		if (data.size() <= 0) {
-			holder.text.setText("No Data");
 
 		} else {
 			/***** Get each Model object from Arraylist ********/
