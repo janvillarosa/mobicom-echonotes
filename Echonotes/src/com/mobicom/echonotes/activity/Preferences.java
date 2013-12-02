@@ -34,19 +34,29 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         addPreferencesFromResource(R.xml.preference);
         PreferenceManager.setDefaultValues(Preferences.this, R.xml.preference, false);
         Preference connectionPref = findPreference("RecordPreference");
-        if(((CheckBoxPreference)connectionPref).isChecked())
+        if(((CheckBoxPreference)connectionPref).isChecked()){
 			connectionPref.setSummary("Echonotes will record when the phone is on standby");
+        }
 		else{
 			connectionPref.setSummary("Echonotes will not record when the phone is on standby");
+			
 		}
+        
         connectionPref = findPreference("SortPreference");
         connectionPref.setSummary(((ListPreference)connectionPref).getEntry());
+        
         connectionPref = findPreference("NotifsPreference");
         if(((CheckBoxPreference)connectionPref).isChecked())
 			connectionPref.setSummary("Notifications for Echonotes is disabled");
 		else{
 			connectionPref.setSummary("Notifications for Echonotes is enabled");
 		}
+        if(getPreferenceScreen().getSharedPreferences().getBoolean("RecordPreference", true)){
+        	connectionPref.setEnabled(true);
+        }
+        else{
+        	connectionPref.setEnabled(false);
+        }
     }
 
 	@Override
@@ -55,10 +65,12 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		if(key.equals("RecordPreference")){
 			if(((CheckBoxPreference)connectionPref).isChecked()){
 				connectionPref.setSummary("Echonotes will record even when the phone is on standby");
-				
+				boolean isEnabled = sharedPreferences.getBoolean(key, true);
+				getPreferenceScreen().findPreference("NotifsPreference").setEnabled(true);
 			}
 			else{
 				connectionPref.setSummary("Echonotes will not record when the phone is on standby");
+				getPreferenceScreen().findPreference("NotifsPreference").setEnabled(false);
 			}
 		}
 		else if(key.equals("SortPreference")){

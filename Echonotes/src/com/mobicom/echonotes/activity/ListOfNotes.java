@@ -65,9 +65,6 @@ public class ListOfNotes extends Activity {
 
 		// database stuff sample
 		db = new DatabaseHelper(getApplicationContext());
-		db.deleteAllAnnotations();
-		db.deleteAllNotes();
-		db.deleteAllTags();
 
 		// Creating notes
 		Note note1 = new Note("MOBICOM", "Mobicom/path", "3 days ago");
@@ -172,6 +169,7 @@ public class ListOfNotes extends Activity {
 
 	public void onResume() {
 		super.onResume();
+		newNote.setImageResource(R.drawable.newnote_button);
 		initializeNoteList();
 	}
 	
@@ -197,7 +195,7 @@ public class ListOfNotes extends Activity {
 			noteListModel = new ListModel();
 			
 			try{
-			an = db.getAnnotationsOfNote(i+1).size();
+			an = db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).size();
 			} catch(Exception e){
 				an = 0;
 			}
@@ -216,7 +214,7 @@ public class ListOfNotes extends Activity {
 			Log.d("Note id", note.getNoteId() + ""); // DISPLAYS IN LOG FOR
 														// VERIFICATION
 			
-			Log.d("Note id Ann id ", anno.get(i).getAnnotationFilePath()+"");
+			//Log.d("Note id Ann id ", db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).get(i).getAnnotationFilePath()+"");
 
 		}
 

@@ -10,6 +10,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,21 +43,21 @@ public class RecordNote extends Activity {
 
 	private Uri fileUri;
 	private MediaRecorder mRecorder = null;
-	private ImageView startRecord, newPhoto, newText;
+	private ImageView startRecord, newPhoto, newText, imageAnnotation;
 	private Button saveText, cancelText;
 	private EditText noteName, textAnnotation;
 	RecordingSession currentNote;
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
-	private ViewStub stub;
+	private ViewStub stub, textAnnotationStub;
 	private Chronometer recordTime;
-	private TextView numAnnotations;
+	private TextView numAnnotations, textAnnotationShow;
 
 	final Context context = this;
 
 	private Thread recordingThread;
-	
+
 	private DatabaseHelper db;
 	private long note_id;
 	private long tag_id;
@@ -76,12 +78,13 @@ public class RecordNote extends Activity {
 		newPhoto.setClickable(false);
 
 		stub = (ViewStub) findViewById(R.id.stub);
+		textAnnotationStub = (ViewStub) findViewById(R.id.annotationShowStub);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setListeners();
 
 		currentNote = new RecordingSession();
-		
+
 		db = new DatabaseHelper(getApplicationContext());
 
 	}
@@ -116,7 +119,8 @@ public class RecordNote extends Activity {
 					currentNote.setRecordingFilePath(path + "/"
 							+ noteName.getText().toString() + "_main_recording"
 							+ ".3gpp");
-					Note note = new Note(currentNote.getName(),currentNote.getRecordingFilePath(),db.getDateTime());
+					Note note = new Note(currentNote.getName(), currentNote
+							.getRecordingFilePath(), db.getDateTime());
 					note_id = db.createNote(note);
 					newPhoto.setClickable(false);
 
@@ -166,6 +170,7 @@ public class RecordNote extends Activity {
 
 				startActivityForResult(newPhotoIntent,
 						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+
 			}
 		});
 
@@ -174,6 +179,9 @@ public class RecordNote extends Activity {
 			@Override
 			public void onClick(View v) {
 
+				textAnnotationStub
+						.setLayoutResource(R.layout.annotation_shower_layout);
+				textAnnotationStub.setVisibility(View.INVISIBLE);
 				stub.setVisibility(View.VISIBLE);
 
 				saveText = (Button) findViewById(R.id.saveTextButton);
@@ -185,9 +193,8 @@ public class RecordNote extends Activity {
 						long timeStamp = annotationTimestamp();
 						try {
 							BufferedWriter out = new BufferedWriter(
-									new FileWriter(path + "/"
-											+ timeStamp + ".txt",
-											true));
+									new FileWriter(path + "/" + timeStamp
+											+ ".txt", true));
 							out.write(textAnnotation.getText().toString());
 							out.close();
 						} catch (IOException e) {
@@ -196,12 +203,20 @@ public class RecordNote extends Activity {
 						}
 						currentNote.getListOfTextAnnotations().add(
 								path + "/" + timeStamp + ".txt");
-						Annotation annotation = new Annotation("text",currentNote.getListOfTextAnnotations().get(currentNote.getListOfTextAnnotations().size()-1),
-																" "+timeStamp);
-						annotation_id = db.createAnnotation(annotation,note_id);
-						
+						Annotation annotation = new Annotation("text",
+								currentNote.getListOfTextAnnotations().get(
+										currentNote.getListOfTextAnnotations()
+												.size() - 1), " " + timeStamp);
+						annotation_id = db.createAnnotation(annotation);
+
 						db.createNoteAnnotation(note_id, annotation_id);
-						stub.setVisibility(View.INVISIBLE);
+						stub.setVisibility(View.GONE);
+
+						textAnnotationStub.setVisibility(View.VISIBLE);
+						textAnnotationShow = (TextView) findViewById(R.id.textAnnotationShowTextView);
+						textAnnotationShow.setText(textAnnotation.getText()
+								.toString());
+						textAnnotation.setText("");
 					}
 				});
 
@@ -211,7 +226,7 @@ public class RecordNote extends Activity {
 					@Override
 					public void onClick(View v) {
 
-						stub.setVisibility(View.INVISIBLE);
+						stub.setVisibility(View.GONE);
 
 					}
 				});
@@ -250,10 +265,22 @@ public class RecordNote extends Activity {
 
 			currentNote.getListOfPicturePathAnnotations().add(
 					mediaFile.getPath());
-			Annotation annotation = new Annotation("image",currentNote.getListOfPicturePathAnnotations().get(currentNote.getListOfPicturePathAnnotations().size()-1),
-													""+ timeStamp);
-			annotation_id = db.createAnnotation(annotation,note_id);
+			Annotation annotation = new Annotation("image", currentNote
+					.getListOfPicturePathAnnotations().get(
+							currentNote.getListOfPicturePathAnnotations()
+									.size() - 1), "" + timeStamp);
+			annotation_id = db.createAnnotation(annotation);
 			db.createNoteAnnotation(note_id, annotation_id);
+
+			textAnnotationStub
+					.setLayoutResource(R.layout.annotation_image_shower);
+			textAnnotationStub.setVisibility(View.VISIBLE);
+			imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
+
+			Bitmap myBitmap = BitmapFactory.decodeFile(mediaFile
+					.getAbsolutePath());
+			imageAnnotation.setImageBitmap(myBitmap);
+
 		} else {
 			return null;
 		}
@@ -274,8 +301,7 @@ public class RecordNote extends Activity {
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT)
 						.show();
-				
-				
+
 				currentNote.getAnnotationTimer().add(annotationTimestamp());
 				numAnnotations.setText(currentNote.getAnnotationTimer().size()
 						+ " annotations");
