@@ -201,14 +201,19 @@ public class RecordNote extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						
+						currentNote.getAnnotationTimer().add(annotationTimestamp());
+						numAnnotations.setText(currentNote.getAnnotationTimer().size()
+								+ " annotations");
+						
 						currentNote.getListOfTextAnnotations().add(
 								path + "/" + timeStamp + ".txt");
 						Annotation annotation = new Annotation("text",
 								currentNote.getListOfTextAnnotations().get(
 										currentNote.getListOfTextAnnotations()
 												.size() - 1), " " + timeStamp);
+						
 						annotation_id = db.createAnnotation(annotation);
-
 						db.createNoteAnnotation(note_id, annotation_id);
 						stub.setVisibility(View.GONE);
 
@@ -265,21 +270,6 @@ public class RecordNote extends Activity {
 
 			currentNote.getListOfPicturePathAnnotations().add(
 					mediaFile.getPath());
-			Annotation annotation = new Annotation("image", currentNote
-					.getListOfPicturePathAnnotations().get(
-							currentNote.getListOfPicturePathAnnotations()
-									.size() - 1), "" + timeStamp);
-			annotation_id = db.createAnnotation(annotation);
-			db.createNoteAnnotation(note_id, annotation_id);
-
-			textAnnotationStub
-					.setLayoutResource(R.layout.annotation_image_shower);
-			textAnnotationStub.setVisibility(View.VISIBLE);
-			imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
-
-			Bitmap myBitmap = BitmapFactory.decodeFile(mediaFile
-					.getAbsolutePath());
-			imageAnnotation.setImageBitmap(myBitmap);
 
 		} else {
 			return null;
@@ -305,6 +295,25 @@ public class RecordNote extends Activity {
 				currentNote.getAnnotationTimer().add(annotationTimestamp());
 				numAnnotations.setText(currentNote.getAnnotationTimer().size()
 						+ " annotations");
+				Annotation annotation = new Annotation("image", currentNote
+						.getListOfPicturePathAnnotations().get(
+								currentNote.getListOfPicturePathAnnotations()
+										.size() - 1), ""
+						+ Long.toString(annotationTimestamp()));
+				annotation_id = db.createAnnotation(annotation);
+				db.createNoteAnnotation(note_id, annotation_id);
+
+				textAnnotationStub
+						.setLayoutResource(R.layout.annotation_image_shower);
+				textAnnotationStub.setVisibility(View.VISIBLE);
+				imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
+
+				Bitmap myBitmap = BitmapFactory.decodeFile(currentNote
+						.getListOfPicturePathAnnotations().get(
+								currentNote.getListOfPicturePathAnnotations()
+										.size() - 1));
+				imageAnnotation.setImageBitmap(myBitmap);
+
 			} else if (resultCode == RESULT_CANCELED) {
 			}
 		}
