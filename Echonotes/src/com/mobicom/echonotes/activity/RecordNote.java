@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -50,7 +52,8 @@ public class RecordNote extends Activity {
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
-	private ViewStub stub, textAnnotationStub;
+	private ViewStub stub, textAnnotationStub, imageAnnotationStub;
+	private View textStub, imageStub;
 	private Chronometer recordTime;
 	private TextView numAnnotations, textAnnotationShow;
 
@@ -78,7 +81,10 @@ public class RecordNote extends Activity {
 		newPhoto.setClickable(false);
 
 		stub = (ViewStub) findViewById(R.id.stub);
-		textAnnotationStub = (ViewStub) findViewById(R.id.annotationShowStub);
+		textStub = ((ViewStub) findViewById(R.id.annotationShowStub)).inflate();
+		imageStub = ((ViewStub) findViewById(R.id.imageAnnotationShowStub)).inflate();
+		textStub.setVisibility(View.INVISIBLE);
+		imageStub.setVisibility(View.INVISIBLE);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setListeners();
@@ -179,10 +185,8 @@ public class RecordNote extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				textAnnotationStub
-						.setLayoutResource(R.layout.annotation_shower_layout);
-				textAnnotationStub.setVisibility(View.INVISIBLE);
 				stub.setVisibility(View.VISIBLE);
+				
 
 				saveText = (Button) findViewById(R.id.saveTextButton);
 				textAnnotation = (EditText) findViewById(R.id.textAnnotationEditText);
@@ -201,27 +205,34 @@ public class RecordNote extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
-						currentNote.getAnnotationTimer().add(annotationTimestamp());
-						numAnnotations.setText(currentNote.getAnnotationTimer().size()
-								+ " annotations");
-						
+
+						currentNote.getAnnotationTimer().add(
+								annotationTimestamp());
+						numAnnotations.setText(currentNote.getAnnotationTimer()
+								.size() + " annotations");
+
 						currentNote.getListOfTextAnnotations().add(
 								path + "/" + timeStamp + ".txt");
 						Annotation annotation = new Annotation("text",
 								currentNote.getListOfTextAnnotations().get(
 										currentNote.getListOfTextAnnotations()
 												.size() - 1), " " + timeStamp);
-						
+
 						annotation_id = db.createAnnotation(annotation);
 						db.createNoteAnnotation(note_id, annotation_id);
 						stub.setVisibility(View.GONE);
 
-						textAnnotationStub.setVisibility(View.VISIBLE);
 						textAnnotationShow = (TextView) findViewById(R.id.textAnnotationShowTextView);
 						textAnnotationShow.setText(textAnnotation.getText()
 								.toString());
 						textAnnotation.setText("");
+						
+						textStub.setVisibility(View.VISIBLE);
+						imageStub.setVisibility(View.INVISIBLE);
+						
+						Animation animate = AnimationUtils.makeInAnimation(getApplicationContext(), true);
+						animate.setDuration(200);
+						textStub.startAnimation(animate);
 					}
 				});
 
@@ -303,9 +314,7 @@ public class RecordNote extends Activity {
 				annotation_id = db.createAnnotation(annotation);
 				db.createNoteAnnotation(note_id, annotation_id);
 
-				textAnnotationStub
-						.setLayoutResource(R.layout.annotation_image_shower);
-				textAnnotationStub.setVisibility(View.VISIBLE);
+				
 				imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
 
 				Bitmap myBitmap = BitmapFactory.decodeFile(currentNote
@@ -313,6 +322,13 @@ public class RecordNote extends Activity {
 								currentNote.getListOfPicturePathAnnotations()
 										.size() - 1));
 				imageAnnotation.setImageBitmap(myBitmap);
+				
+				textStub.setVisibility(View.INVISIBLE);
+				imageStub.setVisibility(View.VISIBLE);
+				
+				Animation animate = AnimationUtils.makeInAnimation(getApplicationContext(), true);
+				animate.setDuration(200);
+				imageStub.startAnimation(animate);
 
 			} else if (resultCode == RESULT_CANCELED) {
 			}

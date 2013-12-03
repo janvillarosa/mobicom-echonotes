@@ -307,7 +307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 Annotation a = new Annotation();
-                a.setAnnotationId(c.getInt((c.getColumnIndex(KEY_ID))));
+                a.setAnnotationId(c.getInt((c.getColumnIndex("tn."+ KEY_ID))));
                 a.setAnnotationTimeStamp(c.getString(c.getColumnIndex(KEY_TIME)));
                 a.setAnnotationType(c.getString(c.getColumnIndex(KEY_TYPE)));
                 a.setAnnotationFilePath(c.getString(c.getColumnIndex(KEY_FILE_PATH)));

@@ -109,18 +109,14 @@ public class ListOfNotes extends Activity {
 		 * return todos; }
 		 */
 
-		list = (ListView) findViewById(R.id.noteListView); // List defined in
-															// XML ( See Below )
+		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
 
-		// get list items from strings.xml
 		drawerListViewItems = getResources().getStringArray(R.array.items);
 		tagsListViewItems = getResources().getStringArray(R.array.tags);
-		// get ListView defined in activity_main.xml
 		drawerListView = (ListView) findViewById(R.id.buttonsListView_gui);
 		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
 
-		// Set the adapter for the list view
 		drawerListView.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.navdrawer_list_item, drawerListViewItems));
 		tagsListView.setAdapter(new ArrayAdapter<String>(this,
@@ -143,12 +139,9 @@ public class ListOfNotes extends Activity {
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-		actionBarDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-		drawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
-		R.string.drawer_open, /* "open drawer" description */
-		R.string.drawer_close /* "close drawer" description */
-		);
+		actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close);
 
 		// Set actionBarDrawerToggle as the DrawerListener
 		drawerLayout.setDrawerListener(actionBarDrawerToggle);
@@ -172,31 +165,30 @@ public class ListOfNotes extends Activity {
 		newNote.setImageResource(R.drawable.newnote_button);
 		initializeNoteList();
 	}
-	
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		db.closeDB();
 	}
-	
-	private void initializeNoteList(){
+
+	private void initializeNoteList() {
 		noteListModelArray.clear();
 		ListModel noteListModel = new ListModel();
 		Note note;
 		int an = 0;
-		
 
 		List<Note> allNotes = db.getAllNotes();
 		List<Annotation> anno = db.getAllAnnotations();
-		for (int i=0; i < allNotes.size(); i++) {
+		for (int i = 0; i < allNotes.size(); i++) {
 			note = allNotes.get(i);
-			
+
 			noteListModel = new ListModel();
-			
-			try{
-			an = db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).size();
-			} catch(Exception e){
+
+			try {
+				an = db.getAnnotationsOfNote(allNotes.get(i).getNoteName())
+						.size();
+			} catch (Exception e) {
 				an = 0;
 			}
 
@@ -213,8 +205,9 @@ public class ListOfNotes extends Activity {
 												// VERIFICATION
 			Log.d("Note id", note.getNoteId() + ""); // DISPLAYS IN LOG FOR
 														// VERIFICATION
-			
-			//Log.d("Note id Ann id ", db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).get(i).getAnnotationFilePath()+"");
+
+			// Log.d("Note id Ann id ",
+			// db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).get(i).getAnnotationFilePath()+"");
 
 		}
 
@@ -223,9 +216,10 @@ public class ListOfNotes extends Activity {
 																		// LOG
 																		// FOR
 																		// VERIFICATION
-		
+
 		if (noteListModelArray.size() != 0) {
-			adapter = new CustomAdapter(this, noteListModelArray, getResources());
+			adapter = new CustomAdapter(this, noteListModelArray,
+					getResources());
 			list.setAdapter(adapter);
 		}
 
