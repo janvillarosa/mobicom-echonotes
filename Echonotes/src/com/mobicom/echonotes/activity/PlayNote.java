@@ -1,15 +1,9 @@
 package com.mobicom.echonotes.activity;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.mobicom.echonotes.R;
-import com.mobicom.echonotes.database.Annotation;
-import com.mobicom.echonotes.database.DatabaseHelper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,15 +21,18 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.database.Annotation;
+import com.mobicom.echonotes.database.DatabaseHelper;
+
 public class PlayNote extends Activity {
 
 	private MediaPlayer mPlayer;
-	private ImageView playButton;
+	private ImageView playButton, image, nextAnnotation, previousAnnotation;
 	private TextView noteNameTextView;
 	private TextView numAnnotationsTextView;
 	private SeekBar seekbar;
 	private int numAnnotations, annotationIterator = 0;
-	private ImageView image;
 	private boolean mStartPlaying = true;
 	private Handler handler = new Handler();
 	private boolean playStart = false;
@@ -59,6 +56,9 @@ public class PlayNote extends Activity {
 		DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
 		playButton = (ImageView) findViewById(R.id.playRecordingImageView);
+		nextAnnotation = (ImageView) findViewById(R.id.nextAnnotation);
+		previousAnnotation = (ImageView) findViewById(R.id.previousAnnotation);
+
 		seekbar = (SeekBar) findViewById(R.id.seekBar1);
 		noteNameTextView = (TextView) findViewById(R.id.noteNameTextView);
 		numAnnotationsTextView = (TextView) findViewById(R.id.numAnnotations);
@@ -83,12 +83,12 @@ public class PlayNote extends Activity {
 					.getSerializable("NOTE_NAME"));
 			numAnnotations = (Integer) savedInstanceState
 					.getSerializable("NUM_ANNOTATIONS");
-			numAnnotationsTextView.setText(annotations.size() + " annotations");
+			numAnnotationsTextView.setText(numAnnotations + " annotations");
 		}
 
 		annotations = db.getAnnotationsOfNote(noteNameTextView.getText()
 				.toString());
-		numAnnotationsTextView.setText(annotations.size() + " annotations");
+		numAnnotationsTextView.setText(numAnnotations + " annotations");
 
 		seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -131,6 +131,34 @@ public class PlayNote extends Activity {
 					playButton.setImageResource(R.drawable.ic_action_play);
 				}
 				mStartPlaying = !mStartPlaying;
+			}
+		});
+
+		nextAnnotation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (annotationIterator != annotations.size()) {
+					int timeStamp = Integer.parseInt(annotations.get(
+							annotationIterator).getAnnotationTimeStamp());
+					mPlayer.seekTo(timeStamp);
+					seekbar.setProgress(timeStamp);
+				} else {
+					nextAnnotation.setClickable(false);
+				}
+			}
+		});
+		previousAnnotation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				annotationIterator -= 2;
+				if (annotationIterator!=0 || annotationIterator!=1) {
+				int timeStamp = Integer.parseInt(annotations.get(
+						annotationIterator).getAnnotationTimeStamp());
+				mPlayer.seekTo(timeStamp);
+				seekbar.setProgress(timeStamp);
+				} else {
+					previousAnnotation.setClickable(false);
+				}
 			}
 		});
 
@@ -180,10 +208,8 @@ public class PlayNote extends Activity {
 
 	private void showAnnotations() {
 		try {
-			// System.out.println(mPlayer.getCurrentPosition());
 			Annotation annotationInView = annotations.get(annotationIterator);
-			// System.out.println(annotationInView.getAnnotationFilePath());
-			// System.out.println(annotationInView.getAnnotationTimeStamp());
+
 			if (mPlayer.getCurrentPosition() >= Integer
 					.parseInt(annotationInView.getAnnotationTimeStamp())) {
 				if (annotationInView.getAnnotationType().equals("text")) {
@@ -214,7 +240,7 @@ public class PlayNote extends Activity {
 					imageStub.setVisibility(View.GONE);
 					Animation animate1 = AnimationUtils.makeInAnimation(
 							getApplicationContext(), true);
-					animate1.setDuration(200);
+					animate1.setDuration(100);
 					textStub.startAnimation(animate1);
 					annotationIterator++;
 				} else {
@@ -226,13 +252,11 @@ public class PlayNote extends Activity {
 					imageAnnotation.setImageBitmap(myBitmap);
 
 					imageStub.setVisibility(View.VISIBLE);
-					System.out.println("IMAGE STUB VISIBLE");
 					textStub.setVisibility(View.GONE);
 					Animation animate2 = AnimationUtils.makeInAnimation(
 							getApplicationContext(), true);
-					animate2.setDuration(200);
+					animate2.setDuration(100);
 					imageStub.startAnimation(animate2);
-					System.out.println("IMAGE STUB");
 					annotationIterator++;
 				}
 			}
@@ -251,6 +275,20 @@ public class PlayNote extends Activity {
 				image.setImageBitmap(thumbnail);
 			}
 		}
+	}
+
+	protected void onPause() {
+		super.onPause();
+		pausePlaying();
+
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		stopPlaying();
+		handler.removeCallbacks(moveSeekBarRunnable);
+		moveSeekBarRunnable = null;
+		handler = null;
 	}
 
 }

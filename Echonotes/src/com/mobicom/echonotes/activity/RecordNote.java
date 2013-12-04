@@ -29,7 +29,6 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.data.RecordingSession;
@@ -56,6 +55,7 @@ public class RecordNote extends Activity {
 	private View textStub, imageStub;
 	private Chronometer recordTime;
 	private TextView numAnnotations, textAnnotationShow;
+	private long timeStamp = 0;
 
 	final Context context = this;
 
@@ -172,6 +172,7 @@ public class RecordNote extends Activity {
 		newPhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				timeStamp = annotationTimestamp();
 				Intent newPhotoIntent = new Intent(
 						MediaStore.ACTION_IMAGE_CAPTURE);
 				fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
@@ -193,10 +194,11 @@ public class RecordNote extends Activity {
 				saveText = (Button) findViewById(R.id.saveTextButton);
 				textAnnotation = (EditText) findViewById(R.id.textAnnotationEditText);
 
+				timeStamp = annotationTimestamp();
+
 				saveText.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						long timeStamp = annotationTimestamp();
 						try {
 							BufferedWriter out = new BufferedWriter(
 									new FileWriter(path + "/" + timeStamp
@@ -325,7 +327,7 @@ public class RecordNote extends Activity {
 
 				Animation animate = AnimationUtils.makeInAnimation(
 						getApplicationContext(), true);
-				animate.setDuration(200);
+				animate.setDuration(100);
 				imageStub.startAnimation(animate);
 
 			} else if (resultCode == RESULT_CANCELED) {

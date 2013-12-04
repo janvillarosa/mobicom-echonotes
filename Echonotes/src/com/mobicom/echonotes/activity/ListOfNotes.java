@@ -1,28 +1,16 @@
 package com.mobicom.echonotes.activity;
 
-import com.mobicom.echonotes.database.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +25,9 @@ import com.mobicom.echonotes.ListModel;
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.adapters.CustomAdapter;
 import com.mobicom.echonotes.data.RecordingSession;
+import com.mobicom.echonotes.database.Annotation;
+import com.mobicom.echonotes.database.DatabaseHelper;
+import com.mobicom.echonotes.database.Note;
 
 public class ListOfNotes extends Activity {
 
@@ -52,7 +43,6 @@ public class ListOfNotes extends Activity {
 	private ListView tagsListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
 	private ImageButton newNote;
-	private ArrayList<RecordingSession> allNotes;
 
 	private void openSettings() {
 		Intent intent = new Intent(ListOfNotes.this, Preferences.class);
@@ -83,7 +73,7 @@ public class ListOfNotes extends Activity {
 		drawerListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					@Override
-					public void onItemClick(AdapterView parentView,
+					public void onItemClick(AdapterView<?> parentView,
 							View childView, int position, long id) {
 						switch (position) {
 						case 0:
@@ -133,7 +123,6 @@ public class ListOfNotes extends Activity {
 		noteListModelArray.clear();
 		ListModel noteListModel = new ListModel();
 		Note note;
-		int an = 0;
 
 		List<Note> allNotes = db.getAllNotes();
 		for (int i = 0; i < allNotes.size(); i++) {
@@ -141,30 +130,15 @@ public class ListOfNotes extends Activity {
 
 			noteListModel = new ListModel();
 
-			try {
-				annotations = db.getAnnotationsOfNote(allNotes.get(i).getNoteName());
-			} catch (Exception e) {
-				an = 0;
-			}
+			annotations = db
+					.getAnnotationsOfNote(allNotes.get(i).getNoteName());
 
 			noteListModel.setNoteName(note.getNoteName());
 			noteListModel.setNumAnnotations(annotations.size());
 			noteListModel.setDateAndTime(note.getDateModified());
 			noteListModelArray.add(noteListModel);
-			Log.d("Note Name", note.getNoteName() + ""); // DISPLAYS IN LOG FOR
-															// VERIFICATION
-			Log.d("Note Annotations", an + "");// DISPLAYS IN LOG FOR
-												// VERIFICATION
-			Log.d("Note id", note.getNoteId() + ""); // DISPLAYS IN LOG FOR
-														// VERIFICATION
 
 		}
-
-		Log.d("Note Count", "Note Count: " + db.getAllNotes().size()); // DISPLAYS
-																		// IN
-																		// LOG
-																		// FOR
-																		// VERIFICATION
 
 		if (noteListModelArray.size() != 0) {
 			adapter = new CustomAdapter(this, noteListModelArray,
@@ -175,7 +149,7 @@ public class ListOfNotes extends Activity {
 		list.setClickable(true);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView parentView, View childView,
+			public void onItemClick(AdapterView<?> parentView, View childView,
 					int position, long id) {
 				Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
 				startActivity(intent);

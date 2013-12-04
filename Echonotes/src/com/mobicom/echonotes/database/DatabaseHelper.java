@@ -1,17 +1,15 @@
 package com.mobicom.echonotes.database;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -222,7 +220,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Tag> tags = new ArrayList<Tag>();
         String selectQuery = "SELECT  * FROM " + TABLE_TAGS;
  
-        Log.e(LOG, selectQuery); //MARKER FOR CHECKING
  
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -270,8 +267,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         String selectQuery = "SELECT  * FROM " + TABLE_ANNOTATIONS;
  
-        Log.e(LOG, selectQuery); //MARKER FOR CHECKING
- 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
  
@@ -311,9 +306,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 a.setAnnotationTimeStamp(c.getString(c.getColumnIndex(KEY_TIME)));
                 a.setAnnotationType(c.getString(c.getColumnIndex(KEY_TYPE)));
                 a.setAnnotationFilePath(c.getString(c.getColumnIndex(KEY_FILE_PATH)));
-                Log.d("Annotation stamp",a.getAnnotationTimeStamp()+""); //DISPLAYS IN LOG FOR VERIFICATION
-                Log.d("Annotation Type", a.getAnnotationType());//DISPLAYS IN LOG FOR VERIFICATION
-                Log.d("Annotation id", a.getAnnotationId()+""); //DISPLAYS IN LOG FOR VERIFICATION
  
                 // adding to tags list
                 annotations.add(a);

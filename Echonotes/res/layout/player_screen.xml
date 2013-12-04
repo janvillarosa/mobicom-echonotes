@@ -27,6 +27,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft = "10dp"
+            android:layout_marginRight = "10dp"
             android:layout_below="@+id/numAnnotations"
             android:layout_weight="1" />
 
@@ -62,40 +63,38 @@
             android:src="@drawable/ic_action_play" />
 
         <ImageView
-            android:id="@+id/nextAnnotation"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/seekBar1"
-            android:layout_toRightOf="@+id/noteNameTextView"
-            android:src="@drawable/ic_action_next_item" />
-
-        <ImageView
             android:id="@+id/previousAnnotation"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_below="@+id/seekBar1"
-            android:layout_toLeftOf="@+id/noteNameTextView"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="11dp"
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@+id/linearLayout1"
             android:src="@drawable/ic_action_previous_item" />
 
+        <ImageView
+            android:id="@+id/nextAnnotation"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignBottom="@+id/previousAnnotation"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="40dp"
+            android:src="@drawable/ic_action_next_item" />
+
     </RelativeLayout>
-    <ViewStub
-        android:id="@+id/playerTextStub"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:inflatedId="@+id/playAnnotationShower"
-        android:layout="@layout/annotation_shower_layout" />
-    
     <ViewStub
         android:id="@+id/playerImageStub"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:inflatedId="@+id/playAnnotationImageShower"
         android:layout="@layout/annotation_image_shower" />
+    
+    <ViewStub
+        android:id="@+id/playerTextStub"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:inflatedId="@+id/playAnnotationShower"
+        android:layout="@layout/annotation_shower_layout" />
+   
     
 </LinearLayout>
