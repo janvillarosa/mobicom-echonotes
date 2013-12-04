@@ -52,7 +52,7 @@ public class RecordNote extends Activity {
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int MEDIA_TYPE_IMAGE = 1;
-	private ViewStub stub, textAnnotationStub, imageAnnotationStub;
+	private ViewStub stub;
 	private View textStub, imageStub;
 	private Chronometer recordTime;
 	private TextView numAnnotations, textAnnotationShow;
@@ -81,8 +81,10 @@ public class RecordNote extends Activity {
 		newPhoto.setClickable(false);
 
 		stub = (ViewStub) findViewById(R.id.stub);
+
 		textStub = ((ViewStub) findViewById(R.id.annotationShowStub)).inflate();
-		imageStub = ((ViewStub) findViewById(R.id.imageAnnotationShowStub)).inflate();
+		imageStub = ((ViewStub) findViewById(R.id.imageAnnotationShowStub))
+				.inflate();
 		textStub.setVisibility(View.INVISIBLE);
 		imageStub.setVisibility(View.INVISIBLE);
 
@@ -116,19 +118,20 @@ public class RecordNote extends Activity {
 					recordTime.start();
 					startRecord.setImageResource(R.drawable.stop_record);
 					newPhoto.setClickable(true);
-				} else {
-					stopRecording();
-					recordTime.stop();
-					startRecord.setImageResource(R.drawable.start_record);
 
 					currentNote.setName(noteName.getText().toString());
 					currentNote.setRecordingFilePath(path + "/"
 							+ noteName.getText().toString() + "_main_recording"
 							+ ".3gpp");
+
 					Note note = new Note(currentNote.getName(), currentNote
 							.getRecordingFilePath(), db.getDateTime());
 					note_id = db.createNote(note);
-					newPhoto.setClickable(false);
+
+				} else {
+					stopRecording();
+					recordTime.stop();
+					startRecord.setImageResource(R.drawable.start_record);
 
 					try {
 						recordingThread.join();
@@ -186,7 +189,6 @@ public class RecordNote extends Activity {
 			public void onClick(View v) {
 
 				stub.setVisibility(View.VISIBLE);
-				
 
 				saveText = (Button) findViewById(R.id.saveTextButton);
 				textAnnotation = (EditText) findViewById(R.id.textAnnotationEditText);
@@ -216,7 +218,7 @@ public class RecordNote extends Activity {
 						Annotation annotation = new Annotation("text",
 								currentNote.getListOfTextAnnotations().get(
 										currentNote.getListOfTextAnnotations()
-												.size() - 1), " " + timeStamp);
+												.size() - 1), "" + timeStamp);
 
 						annotation_id = db.createAnnotation(annotation);
 						db.createNoteAnnotation(note_id, annotation_id);
@@ -226,11 +228,12 @@ public class RecordNote extends Activity {
 						textAnnotationShow.setText(textAnnotation.getText()
 								.toString());
 						textAnnotation.setText("");
-						
+
 						textStub.setVisibility(View.VISIBLE);
 						imageStub.setVisibility(View.INVISIBLE);
-						
-						Animation animate = AnimationUtils.makeInAnimation(getApplicationContext(), true);
+
+						Animation animate = AnimationUtils.makeInAnimation(
+								getApplicationContext(), true);
 						animate.setDuration(200);
 						textStub.startAnimation(animate);
 					}
@@ -291,8 +294,6 @@ public class RecordNote extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// MenuInflater inflater = getMenuInflater();
-		// inflater.inflate(R.menu.recording_screen, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -300,21 +301,17 @@ public class RecordNote extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Annotation saved", Toast.LENGTH_SHORT)
-						.show();
 
-				currentNote.getAnnotationTimer().add(annotationTimestamp());
 				numAnnotations.setText(currentNote.getAnnotationTimer().size()
 						+ " annotations");
 				Annotation annotation = new Annotation("image", currentNote
 						.getListOfPicturePathAnnotations().get(
 								currentNote.getListOfPicturePathAnnotations()
 										.size() - 1), ""
-						+ Long.toString(annotationTimestamp()));
+						+ annotationTimestamp());
 				annotation_id = db.createAnnotation(annotation);
 				db.createNoteAnnotation(note_id, annotation_id);
 
-				
 				imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
 
 				Bitmap myBitmap = BitmapFactory.decodeFile(currentNote
@@ -322,11 +319,12 @@ public class RecordNote extends Activity {
 								currentNote.getListOfPicturePathAnnotations()
 										.size() - 1));
 				imageAnnotation.setImageBitmap(myBitmap);
-				
+
 				textStub.setVisibility(View.INVISIBLE);
 				imageStub.setVisibility(View.VISIBLE);
-				
-				Animation animate = AnimationUtils.makeInAnimation(getApplicationContext(), true);
+
+				Animation animate = AnimationUtils.makeInAnimation(
+						getApplicationContext(), true);
 				animate.setDuration(200);
 				imageStub.startAnimation(animate);
 

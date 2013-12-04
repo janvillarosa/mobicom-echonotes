@@ -14,6 +14,7 @@ public class Annotation {
 	public Annotation(String annotationType, String annotationFilePath, String timeStamp){
 		this.annotationType = annotationType;
 		this.annotationFilePath = annotationFilePath;
+		this.timeStamp=timeStamp;
 	}
 	
 	public Annotation(long id, String annotationType, String annotationFilePath, String timeStamp){

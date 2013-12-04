@@ -44,6 +44,7 @@ public class ListOfNotes extends Activity {
 	CustomAdapter adapter;
 	DatabaseHelper db;
 	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
+	public ArrayList<Annotation> annotations = new ArrayList<Annotation>();
 	private String[] drawerListViewItems;
 	private String[] tagsListViewItems;
 	private DrawerLayout drawerLayout;
@@ -63,51 +64,7 @@ public class ListOfNotes extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
 
-		// database stuff sample
 		db = new DatabaseHelper(getApplicationContext());
-
-		// Creating notes
-		Note note1 = new Note("MOBICOM", "Mobicom/path", "3 days ago");
-		Note note2 = new Note("ADVSTAT", "Advstat/path", "4 days ago");
-		Note note3 = new Note("COMPILE", "Compile/path", "5 minutes ago");
-		Note note4 = new Note("ENGLRES", "Englres/path", "a while ago");
-
-		// Inserting tags in db
-
-		/*
-		 * long note1_id = db.createNote(note1); long annotation1_id =
-		 * db.createAnnotation(annotation1); db.createNoteAnnotation(note1_id,
-		 * annotation1_id); Log.d("Note id Ann id",
-		 * note1_id+" "+annotation1_id+""); //DISPLAYS IN LOG FOR VERIFICATION
-		 * 
-		 * long note2_id = db.createNote(note2); long note3_id =
-		 * db.createNote(note3); long note4_id = db.createNote(note4);
-		 */
-
-		/*
-		 * public List<Todo> getAllToDosByTag(String tag_name) { List<Todo>
-		 * todos = new ArrayList<Todo>();
-		 * 
-		 * String selectQuery = "SELECT  * FROM " + TABLE_TODO + " td, " +
-		 * TABLE_TAG + " tg, " + TABLE_TODO_TAG + " tt WHERE tg." + KEY_TAG_NAME
-		 * + " = '" + tag_name + "'" + " AND tg." + KEY_ID + " = " + "tt." +
-		 * KEY_TAG_ID + " AND td." + KEY_ID + " = " + "tt." + KEY_TODO_ID;
-		 * 
-		 * Log.e(LOG, selectQuery);
-		 * 
-		 * SQLiteDatabase db = this.getReadableDatabase(); Cursor c =
-		 * db.rawQuery(selectQuery, null);
-		 * 
-		 * // looping through all rows and adding to list if (c.moveToFirst()) {
-		 * do { Todo td = new Todo();
-		 * td.setId(c.getInt((c.getColumnIndex(KEY_ID))));
-		 * td.setNote((c.getString(c.getColumnIndex(KEY_TODO))));
-		 * td.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
-		 * 
-		 * // adding to todo list todos.add(td); } while (c.moveToNext()); }
-		 * 
-		 * return todos; }
-		 */
 
 		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
@@ -179,24 +136,19 @@ public class ListOfNotes extends Activity {
 		int an = 0;
 
 		List<Note> allNotes = db.getAllNotes();
-		List<Annotation> anno = db.getAllAnnotations();
 		for (int i = 0; i < allNotes.size(); i++) {
 			note = allNotes.get(i);
 
 			noteListModel = new ListModel();
 
 			try {
-				an = db.getAnnotationsOfNote(allNotes.get(i).getNoteName())
-						.size();
+				annotations = db.getAnnotationsOfNote(allNotes.get(i).getNoteName());
 			} catch (Exception e) {
 				an = 0;
 			}
 
 			noteListModel.setNoteName(note.getNoteName());
-			noteListModel.setNumAnnotations(/*
-											 * db.getAnnotationsOfNote(note.
-											 * getNoteId()).size()
-											 */an);
+			noteListModel.setNumAnnotations(annotations.size());
 			noteListModel.setDateAndTime(note.getDateModified());
 			noteListModelArray.add(noteListModel);
 			Log.d("Note Name", note.getNoteName() + ""); // DISPLAYS IN LOG FOR
@@ -205,9 +157,6 @@ public class ListOfNotes extends Activity {
 												// VERIFICATION
 			Log.d("Note id", note.getNoteId() + ""); // DISPLAYS IN LOG FOR
 														// VERIFICATION
-
-			// Log.d("Note id Ann id ",
-			// db.getAnnotationsOfNote(allNotes.get(i).getNoteName()).get(i).getAnnotationFilePath()+"");
 
 		}
 
@@ -301,6 +250,7 @@ public class ListOfNotes extends Activity {
 		Intent intent = new Intent(ListOfNotes.this, PlayNote.class);
 		intent.putExtra("NOTE_NAME", tempValues.getNoteName());
 		intent.putExtra("NUM_ANNOTATIONS", tempValues.getNumAnnotations());
+
 		startActivity(intent);
 	}
 

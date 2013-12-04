@@ -294,7 +294,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<Annotation> getAnnotationsOfNote(String note_name){
     	ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " tn, "
-                + TABLE_ANNOTATIONS + " ta, " + TABLE_NOTES_ANNOTATIONS + " tna WHERE tn."
+                + TABLE_ANNOTATIONS + " ta, " + TABLE_NOTES_ANNOTATIONS + " tna WHERE "
                 + KEY_NAME + " = '" + note_name + "'" + " AND ta." + KEY_ID
                 + " = " + "tna." + KEY_ANNOTATION_ID + " AND tn." + KEY_ID + " = "
                 + "tna." + KEY_NOTE_ID;
@@ -307,7 +307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 Annotation a = new Annotation();
-                a.setAnnotationId(c.getInt((c.getColumnIndex("tn."+ KEY_ID))));
+                a.setAnnotationId(c.getInt((c.getColumnIndex(KEY_ID))));
                 a.setAnnotationTimeStamp(c.getString(c.getColumnIndex(KEY_TIME)));
                 a.setAnnotationType(c.getString(c.getColumnIndex(KEY_TYPE)));
                 a.setAnnotationFilePath(c.getString(c.getColumnIndex(KEY_FILE_PATH)));
@@ -441,7 +441,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // delete all annotations
         for (Annotation annotation: allAnnotations) {
             // delete annotation
-            deleteNote(annotation.getAnnotationId());
+            deleteAnnotation(annotation.getAnnotationId());
         }
     }
     
@@ -451,7 +451,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // delete all annotations
         for (Tag tag: allTags) {
             // delete annotation
-            deleteNote(tag.getTagId());
+            deleteTag(tag.getTagId());
         }
     }
     

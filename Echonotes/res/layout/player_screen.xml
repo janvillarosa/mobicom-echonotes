@@ -78,26 +78,24 @@
             android:src="@drawable/ic_action_previous_item" />
 
     </RelativeLayout>
-    
     <ViewStub
-        android:id="@+id/annotationShowStub"
+        android:id="@+id/playerTextStub"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/imageButtonContainer"
-        android:inflatedId="@+id/annotationShower"
+        android:inflatedId="@+id/playAnnotationShower"
         android:layout="@layout/annotation_shower_layout" />
     
     <ViewStub
-        android:id="@+id/imageAnnotationShowStub"
+        android:id="@+id/playerImageStub"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/imageButtonContainer"
-        android:inflatedId="@+id/annotationShower"
+        android:inflatedId="@+id/playAnnotationImageShower"
         android:layout="@layout/annotation_image_shower" />
+    
 </LinearLayout>
