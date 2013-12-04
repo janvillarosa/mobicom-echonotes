@@ -242,8 +242,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	ArrayList<Note> notes = new ArrayList<Note>();
         String selectQuery = "SELECT  * FROM " + TABLE_NOTES;
  
-        Log.e(LOG, selectQuery); //MARKER FOR CHECKING
- 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
  
@@ -293,7 +291,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + KEY_NAME + " = '" + note_name + "'" + " AND ta." + KEY_ID
                 + " = " + "tna." + KEY_ANNOTATION_ID + " AND tn." + KEY_ID + " = "
                 + "tna." + KEY_NOTE_ID;
-        Log.e(LOG, selectQuery); //MARKER FOR CHECKING
  
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);

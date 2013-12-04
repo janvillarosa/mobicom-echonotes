@@ -36,7 +36,7 @@
         </activity>
         <activity
             android:name="com.mobicom.echonotes.activity.RecordNote"
-            android:label="Recording"
+            android:label="New Echonote"
             android:parentActivityName="com.mobicom.echonotes.activity.ListOfNotes" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -49,7 +49,7 @@
         </activity>
          <activity
             android:name="com.mobicom.echonotes.activity.PlayNote"
-            android:label="Review"
+            android:label="Review Echonote"
             android:parentActivityName="com.mobicom.echonotes.activity.ListOfNotes" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

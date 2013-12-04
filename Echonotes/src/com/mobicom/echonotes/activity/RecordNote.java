@@ -20,6 +20,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.animation.Animation;
@@ -68,6 +69,7 @@ public class RecordNote extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recorder_screen);
 
@@ -89,12 +91,47 @@ public class RecordNote extends Activity {
 		imageStub.setVisibility(View.INVISIBLE);
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+
+		setOnTouch();
 		setListeners();
 
 		currentNote = new RecordingSession();
 
 		db = new DatabaseHelper(getApplicationContext());
 
+	}
+
+	private void setOnTouch() {
+
+		newPhoto.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					newPhoto.setImageResource(R.drawable.add_picture_annotation_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					newPhoto.setImageResource(R.drawable.add_picture_annotation);
+
+				}
+				return false;
+			}
+		});
+
+		newText.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					newText.setImageResource(R.drawable.add_note_annotation_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					newText.setImageResource(R.drawable.add_note_annotation);
+
+				}
+				return false;
+			}
+		});
 	}
 
 	private void setListeners() {
@@ -170,6 +207,7 @@ public class RecordNote extends Activity {
 
 		// NEW PHOTO ANNOTATION LISTENER
 		newPhoto.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
 				timeStamp = annotationTimestamp();
@@ -177,7 +215,6 @@ public class RecordNote extends Activity {
 						MediaStore.ACTION_IMAGE_CAPTURE);
 				fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				newPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
 				startActivityForResult(newPhotoIntent,
 						CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 

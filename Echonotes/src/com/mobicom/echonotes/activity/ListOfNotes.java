@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -96,12 +97,26 @@ public class ListOfNotes extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		newNote = (ImageButton) findViewById(R.id.newNoteButton);
+		
+		newNote.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					newNote.setImageResource(R.drawable.newnote_button_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					newNote.setImageResource(R.drawable.newnote_button);
+
+				}
+				return false;
+			}
+		});
 
 		newNote.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(ListOfNotes.this, RecordNote.class);
-				newNote.setImageResource(R.drawable.newnote_button_pressed);
 				startActivity(intent);
 			}
 		});
@@ -109,7 +124,6 @@ public class ListOfNotes extends Activity {
 
 	public void onResume() {
 		super.onResume();
-		newNote.setImageResource(R.drawable.newnote_button);
 		initializeNoteList();
 	}
 
