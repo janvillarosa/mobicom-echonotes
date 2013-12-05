@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -57,6 +61,7 @@ public class RecordNote extends Activity {
 	private Chronometer recordTime;
 	private TextView numAnnotations, textAnnotationShow;
 	private long timeStamp = 0;
+	private NotificationManager notificationManager;
 
 	final Context context = this;
 
@@ -165,6 +170,8 @@ public class RecordNote extends Activity {
 							.getRecordingFilePath(), db.getDateTime());
 					note_id = db.createNote(note);
 
+					notifyUser();
+
 				} else {
 					stopRecording();
 					recordTime.stop();
@@ -194,6 +201,8 @@ public class RecordNote extends Activity {
 									tag_id = db.createTag(tag);
 									db.createNoteTag(note_id, tag_id);
 									currentNote.writeMetadata();
+									
+									notificationManager.cancelAll();
 									finish();
 
 								}
@@ -341,6 +350,8 @@ public class RecordNote extends Activity {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 
+				currentNote.getAnnotationTimer().add(annotationTimestamp());
+
 				numAnnotations.setText(currentNote.getAnnotationTimer().size()
 						+ " annotations");
 				Annotation annotation = new Annotation("image", currentNote
@@ -404,6 +415,24 @@ public class RecordNote extends Activity {
 		mRecorder.stop();
 		mRecorder.release();
 		isRecording = false;
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void notifyUser() {
+		// prepare intent which is triggered if the
+		// notification is selected
+
+		// build notification
+		// the addAction re-use the same intent to keep the example short
+		Notification n = new Notification.Builder(this)
+				.setContentTitle("Echonotes is recording.")
+				.setContentText("Tap this notification to go back to the app.")
+				.setSmallIcon(R.drawable.ic_stat_device_access_mic)
+				.setAutoCancel(true).build();
+
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		notificationManager.notify(0, n);
 	}
 
 }

@@ -13,6 +13,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.animation.Animation;
@@ -43,6 +44,7 @@ public class PlayNote extends Activity {
 		@Override
 		public void run() {
 			seekbar.setProgress(mPlayer.getCurrentPosition());
+			skippingEnbled();
 			showAnnotations();
 			handler.postDelayed(moveSeekBarRunnable, 100);
 		}
@@ -52,6 +54,7 @@ public class PlayNote extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_screen);
+		
 
 		DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
@@ -68,6 +71,8 @@ public class PlayNote extends Activity {
 		imageStub = ((ViewStub) findViewById(R.id.playerImageStub)).inflate();
 		textStub.setVisibility(View.GONE);
 		imageStub.setVisibility(View.GONE);
+		skippingEnbled();
+		
 
 		Bundle extras;
 
@@ -77,6 +82,7 @@ public class PlayNote extends Activity {
 			} else {
 				numAnnotations = extras.getInt("NUM_ANNOTATIONS");
 				noteNameTextView.setText(extras.getString("NOTE_NAME"));
+				this.setTitle(extras.getString("NOTE_NAME"));
 			}
 		} else {
 			noteNameTextView.setText((String) savedInstanceState
@@ -84,12 +90,56 @@ public class PlayNote extends Activity {
 			numAnnotations = (Integer) savedInstanceState
 					.getSerializable("NUM_ANNOTATIONS");
 			numAnnotationsTextView.setText(numAnnotations + " annotations");
+			this.setTitle((String) savedInstanceState
+					.getSerializable("NOTE_NAME"));;
 		}
 
 		annotations = db.getAnnotationsOfNote(noteNameTextView.getText()
 				.toString());
 		numAnnotationsTextView.setText(numAnnotations + " annotations");
 
+		setListeners();
+		setOnTouch();
+
+	}
+
+	private void setOnTouch() {
+		previousAnnotation.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					previousAnnotation
+							.setImageResource(R.drawable.ic_action_previous_item_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					previousAnnotation
+							.setImageResource(R.drawable.ic_action_previous_item);
+
+				}
+				return false;
+			}
+		});
+		
+		nextAnnotation.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					nextAnnotation
+							.setImageResource(R.drawable.ic_action_next_item_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					nextAnnotation
+							.setImageResource(R.drawable.ic_action_next_item);
+
+				}
+				return false;
+			}
+		});
+	}
+
+	private void setListeners() {
 		seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
 			@Override
@@ -119,8 +169,6 @@ public class PlayNote extends Activity {
 			}
 		});
 
-		handler.removeCallbacks(moveSeekBarRunnable);
-
 		playButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -137,31 +185,40 @@ public class PlayNote extends Activity {
 		nextAnnotation.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (annotationIterator != annotations.size()) {
-					int timeStamp = Integer.parseInt(annotations.get(
-							annotationIterator).getAnnotationTimeStamp());
-					mPlayer.seekTo(timeStamp);
-					seekbar.setProgress(timeStamp);
-				} else {
-					nextAnnotation.setClickable(false);
-				}
+				int timeStamp = Integer.parseInt(annotations.get(
+						annotationIterator).getAnnotationTimeStamp());
+				mPlayer.seekTo(timeStamp);
+				seekbar.setProgress(timeStamp);
 			}
 		});
 		previousAnnotation.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				annotationIterator -= 2;
-				if (annotationIterator!=0 || annotationIterator!=1) {
 				int timeStamp = Integer.parseInt(annotations.get(
 						annotationIterator).getAnnotationTimeStamp());
 				mPlayer.seekTo(timeStamp);
 				seekbar.setProgress(timeStamp);
-				} else {
-					previousAnnotation.setClickable(false);
-				}
 			}
 		});
+	}
 
+	private void skippingEnbled() {
+		if (annotationIterator == 0 || annotationIterator == 1) {
+			previousAnnotation.setClickable(false);
+			previousAnnotation
+					.setImageResource(R.drawable.ic_action_previous_item_pressed);
+		} else if (annotationIterator == annotations.size()) {
+			nextAnnotation.setClickable(false);
+			nextAnnotation
+					.setImageResource(R.drawable.ic_action_next_item_pressed);
+		} else {
+			previousAnnotation.setClickable(true);
+			nextAnnotation.setClickable(true);
+			previousAnnotation
+					.setImageResource(R.drawable.ic_action_previous_item);
+			nextAnnotation.setImageResource(R.drawable.ic_action_next_item);
+		}
 	}
 
 	private void onPlay(boolean start) {
@@ -243,6 +300,7 @@ public class PlayNote extends Activity {
 					animate1.setDuration(100);
 					textStub.startAnimation(animate1);
 					annotationIterator++;
+					skippingEnbled();
 				} else {
 
 					ImageView imageAnnotation = (ImageView) findViewById(R.id.imageAnnotationImageView);
@@ -258,6 +316,7 @@ public class PlayNote extends Activity {
 					animate2.setDuration(100);
 					imageStub.startAnimation(animate2);
 					annotationIterator++;
+					skippingEnbled();
 				}
 			}
 		} catch (Exception e) {
