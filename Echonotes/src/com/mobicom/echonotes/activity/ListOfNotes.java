@@ -29,6 +29,7 @@ import com.mobicom.echonotes.data.RecordingSession;
 import com.mobicom.echonotes.database.Annotation;
 import com.mobicom.echonotes.database.DatabaseHelper;
 import com.mobicom.echonotes.database.Note;
+import com.mobicom.echonotes.database.Tag;
 
 public class ListOfNotes extends Activity {
 
@@ -49,6 +50,14 @@ public class ListOfNotes extends Activity {
 		Intent intent = new Intent(ListOfNotes.this, Preferences.class);
 		startActivity(intent);
 	}
+	
+	private void openSearch(String query) {
+		Intent intent = new Intent(ListOfNotes.this,
+				SearchResultsActivity.class);
+		intent.putExtra("retrieve", "search");
+		intent.putExtra("query", query);
+		startActivity(intent);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +68,39 @@ public class ListOfNotes extends Activity {
 
 		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
+		
+		Tag tagOne = new Tag("Personal");
+		Tag tagTwo = new Tag("Work");
+		Tag tagThree = new Tag("Play");
+		
+		db.createTag(tagOne);
+		db.createTag(tagTwo);
+		db.createTag(tagThree);
+		/*
+
+		if (!db.getAllTags().isEmpty()) {
+			for (int i = 0; i < db.getAllTags().size(); i++) {
+				tagsListViewItems[i] = db.getAllTags().get(i).getTagName();
+			}
+			tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
+			tagsListView.setAdapter(new ArrayAdapter<String>(this,
+					R.layout.navdrawer_list_item, tagsListViewItems));
+			tagsListView.setClickable(true);
+			tagsListView
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+						@Override
+						public void onItemClick(AdapterView<?> parentView,
+								View childView, int position, long id) {
+							Intent intent = new Intent(ListOfNotes.this,
+									SearchResultsActivity.class);
+							intent.putExtra("retrieve", "tags");
+							intent.putExtra("tag", tagsListViewItems[position]);
+							startActivity(intent);
+						}
+					});
+		}
+		*/
 
 		drawerListViewItems = getResources().getStringArray(R.array.items);
 		tagsListViewItems = getResources().getStringArray(R.array.tags);
@@ -97,7 +139,7 @@ public class ListOfNotes extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		newNote = (ImageButton) findViewById(R.id.newNoteButton);
-		
+
 		newNote.setOnTouchListener(new View.OnTouchListener() {
 
 			@Override
@@ -178,6 +220,19 @@ public class ListOfNotes extends Activity {
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
 				.getActionView();
+		searchView.setSubmitButtonEnabled(true);
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			public boolean onQueryTextChange(String newText) {
+				// Do something
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				openSearch(query);
+				return true;
+			}
+		});
 		searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(getComponentName()));
 		return true;

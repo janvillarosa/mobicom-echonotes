@@ -342,7 +342,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
     public ArrayList<Note> getNotesLike(String noteName){
     	ArrayList<Note> notes = new ArrayList<Note>();
-        String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " WHERE " + KEY_NAME + " LIKE " + noteName;
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " WHERE " + KEY_NAME + " LIKE " + "'%" + noteName + "%'";
  
         Log.e(LOG, selectQuery); //MARKER FOR CHECKING
  
