@@ -40,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_DATE_MODIFIED = "date_modified";
  
     // TAGS Table - column names
+    private static final String KEY_COLOR = "color";
  
     // ANNOTATIONS Table - column names
     private static final String KEY_TYPE = "type";
@@ -60,8 +61,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
  
     // Categories table create statement
     private static final String CREATE_TABLE_TAGS = "CREATE TABLE " + TABLE_TAGS
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT"
-            +  ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+            +  KEY_COLOR + " TEXT" + ")";
  
     // Annotations table create statement
     private static final String CREATE_TABLE_ANNOTATIONS = "CREATE TABLE "
@@ -114,6 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, tag.getTagName());
+        values.put(KEY_COLOR, tag.getColor());
  
         // insert row
         long tag_id = db.insert(TABLE_TAGS, null, values);
@@ -208,6 +210,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, tag.getTagName());
+        values.put(KEY_COLOR, tag.getColor());
  
         // updating row
         return db.update(TABLE_NOTES, values, KEY_ID + " = ?",
@@ -230,6 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Tag t = new Tag();
                 t.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                 t.setTagName(c.getString(c.getColumnIndex(KEY_NAME)));
+                t.setColor(c.getString(c.getColumnIndex(KEY_COLOR)));
  
                 // adding to tags list
                 tags.add(t);
@@ -380,8 +384,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             	Tag t = new Tag();
                 t.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                 t.setTagName(c.getString(c.getColumnIndex(KEY_NAME)));
- 
-                // adding to tags list
+                t.setColor(c.getString(c.getColumnIndex(KEY_COLOR)));
+                
+        // adding to tags list
                 tags.add(t);
             } while (c.moveToNext());
         }

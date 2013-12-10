@@ -25,14 +25,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:scaleType="fitEnd"
+                android:scaleType="fitXY"
                 android:src="@drawable/add_note_annotation" />
 
             <ImageView
                 android:id="@+id/newPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="fitEnd"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
                 android:src="@drawable/add_picture_annotation" />
         </LinearLayout>
 
@@ -91,10 +92,10 @@
             android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonLayout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/recordTimeChronometer"
             android:src="@drawable/recording_separator" />
+
     </RelativeLayout>
 
     <ViewStub

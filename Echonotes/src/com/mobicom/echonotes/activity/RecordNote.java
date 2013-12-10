@@ -13,6 +13,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
@@ -21,6 +22,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -62,6 +66,8 @@ public class RecordNote extends Activity {
 	private TextView numAnnotations, textAnnotationShow;
 	private long timeStamp = 0;
 	private NotificationManager notificationManager;
+	private SharedPreferences sharedPreferences;
+	private boolean recordOnStandby = false, showNotif = false;
 
 	final Context context = this;
 
@@ -77,6 +83,8 @@ public class RecordNote extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.recorder_screen);
+
+		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
 
 		startRecord = (ImageView) findViewById(R.id.startRecordImageView);
 		newPhoto = (ImageView) findViewById(R.id.newPhotoImageView);
@@ -101,6 +109,21 @@ public class RecordNote extends Activity {
 		setListeners();
 
 		currentNote = new RecordingSession();
+
+		SharedPreferences settingPref = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+
+		if (settingPref.getBoolean("RecordPreference", true)) {
+			recordOnStandby = true;
+		} else {
+			recordOnStandby = false;
+		}
+
+		if (settingPref.getBoolean("NotifsPreference", true)) {
+			showNotif = false;
+		} else {
+			showNotif = true;
+		}
 
 		db = new DatabaseHelper(getApplicationContext());
 
@@ -170,46 +193,12 @@ public class RecordNote extends Activity {
 							.getRecordingFilePath(), db.getDateTime());
 					note_id = db.createNote(note);
 
-					notifyUser();
+					if (showNotif)
+						notifyUser();
 
 				} else {
 					stopRecording();
-					recordTime.stop();
-					startRecord.setImageResource(R.drawable.start_record);
-
-					try {
-						recordingThread.join();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					final String[] categories = getResources().getStringArray(
-							R.array.tags);
-
-					AlertDialog.Builder builder = new AlertDialog.Builder(
-							context);
-
-					builder.setTitle("Add to a category");
-					builder.setItems(R.array.tags,
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-
-									currentNote.setCategory(categories[which]);
-									Tag tag = new Tag();
-									tag_id = db.createTag(tag);
-									db.createNoteTag(note_id, tag_id);
-									currentNote.writeMetadata();
-									
-									notificationManager.cancelAll();
-									finish();
-
-								}
-							});
-
-					AlertDialog alert = builder.create();
-					alert.show();
+					saveRecording();
 				}
 			}
 		});
@@ -386,6 +375,53 @@ public class RecordNote extends Activity {
 	public long annotationTimestamp() {
 		return SystemClock.elapsedRealtime() - recordTime.getBase();
 
+	}
+
+	protected void onPause() {
+		super.onPause();
+		if (!recordOnStandby) {
+			stopRecording();
+			saveRecording();
+		}
+	}
+
+	private void saveRecording() {
+		recordTime.stop();
+		startRecord.setImageResource(R.drawable.start_record);
+
+		try {
+			recordingThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		final String[] tags = { "0", "0", "0", "0", "0", "0" };
+
+		for (int i = 0; i < 6; i++) {
+			tags[i] = sharedPreferences.getString("tagPos" + i, "Tag " + i);
+		}
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+		builder.setTitle("Add to a category");
+		builder.setItems(tags, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				currentNote.setCategory(tags[which]);
+				Tag tag = new Tag();
+				tag_id = db.createTag(tag);
+				db.createNoteTag(note_id, tag_id);
+				currentNote.writeMetadata();
+
+				notificationManager.cancelAll();
+				finish();
+
+			}
+		});
+
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	private void startRecording() {

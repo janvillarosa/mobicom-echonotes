@@ -7,10 +7,15 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,18 +44,20 @@ public class ListOfNotes extends Activity {
 	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
 	public ArrayList<Annotation> annotations = new ArrayList<Annotation>();
 	private String[] drawerListViewItems;
-	private String[] tagsListViewItems;
+	private ArrayList<String> tagsListViewItems;
 	private DrawerLayout drawerLayout;
 	private ListView drawerListView;
 	private ListView tagsListView;
 	private ActionBarDrawerToggle actionBarDrawerToggle;
+	private SharedPreferences sharedPreferences;
+	private Editor settingsEditor;
 	private ImageButton newNote;
 
 	private void openSettings() {
 		Intent intent = new Intent(ListOfNotes.this, Preferences.class);
 		startActivity(intent);
 	}
-	
+
 	private void openSearch(String query) {
 		Intent intent = new Intent(ListOfNotes.this,
 				SearchResultsActivity.class);
@@ -64,48 +71,50 @@ public class ListOfNotes extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
 
+		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
+		if (sharedPreferences.getBoolean("firstrun", true)) {
+			System.out.println("WENT IN FIRST RUN");
+			settingsEditor = sharedPreferences.edit();
+			settingsEditor.putString("tagPos0", "Home");
+			settingsEditor.putString("tagPos1", "School");
+			settingsEditor.putString("tagPos2", "Work");
+			settingsEditor.putString("tagPos3", "Leisure");
+			settingsEditor.putString("tagPos4", "Personal");
+			settingsEditor.putString("tagPos5", "Miscellaneous");
+			settingsEditor.putBoolean("firstrun", false);
+			settingsEditor.commit();
+		}
+
 		db = new DatabaseHelper(getApplicationContext());
 
 		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
-		
-		Tag tagOne = new Tag("Personal");
-		Tag tagTwo = new Tag("Work");
-		Tag tagThree = new Tag("Play");
-		
-		db.createTag(tagOne);
-		db.createTag(tagTwo);
-		db.createTag(tagThree);
-		/*
-
-		if (!db.getAllTags().isEmpty()) {
-			for (int i = 0; i < db.getAllTags().size(); i++) {
-				tagsListViewItems[i] = db.getAllTags().get(i).getTagName();
-			}
-			tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
-			tagsListView.setAdapter(new ArrayAdapter<String>(this,
-					R.layout.navdrawer_list_item, tagsListViewItems));
-			tagsListView.setClickable(true);
-			tagsListView
-					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-						@Override
-						public void onItemClick(AdapterView<?> parentView,
-								View childView, int position, long id) {
-							Intent intent = new Intent(ListOfNotes.this,
-									SearchResultsActivity.class);
-							intent.putExtra("retrieve", "tags");
-							intent.putExtra("tag", tagsListViewItems[position]);
-							startActivity(intent);
-						}
-					});
-		}
-		*/
 
 		drawerListViewItems = getResources().getStringArray(R.array.items);
-		tagsListViewItems = getResources().getStringArray(R.array.tags);
 		drawerListView = (ListView) findViewById(R.id.buttonsListView_gui);
+
+		tagsListViewItems = new ArrayList<String>();
+
+		for (int i = 0; i < 6; i++) {
+			tagsListViewItems.add(sharedPreferences.getString("tagPos" + i,
+					"Tag " + i));
+		}
 		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
+		tagsListView.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.navdrawer_list_item, tagsListViewItems));
+		tagsListView.setClickable(true);
+		tagsListView
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView parentView,
+							View childView, int position, long id) {
+						Intent intent = new Intent(ListOfNotes.this,
+								SearchResultsActivity.class);
+						intent.putExtra("retrieve", "tags");
+						intent.putExtra("tag", tagsListViewItems.get(position));
+						startActivity(intent);
+					}
+				});
 
 		drawerListView.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.navdrawer_list_item, drawerListViewItems));
@@ -167,6 +176,15 @@ public class ListOfNotes extends Activity {
 	public void onResume() {
 		super.onResume();
 		initializeNoteList();
+		
+		tagsListViewItems.clear();
+		for (int i = 0; i < 6; i++) {
+			tagsListViewItems.add(sharedPreferences.getString("tagPos" + i,
+					"Tag " + i));
+		}
+		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
+		tagsListView.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.navdrawer_list_item, tagsListViewItems));
 	}
 
 	@Override
