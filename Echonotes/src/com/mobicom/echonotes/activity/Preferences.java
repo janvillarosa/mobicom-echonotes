@@ -1,6 +1,10 @@
 package com.mobicom.echonotes.activity;
 
+import java.util.ArrayList;
+
 import com.mobicom.echonotes.R;
+import com.mobicom.echonotes.database.DatabaseHelper;
+import com.mobicom.echonotes.database.Tag;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -16,7 +20,9 @@ import android.util.Log;
 
 public class Preferences extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
-
+	
+	DatabaseHelper db;
+	ArrayList<Tag> tagItems;
 	private Editor settingsEditor;
 
 	@Override
@@ -39,7 +45,8 @@ public class Preferences extends PreferenceActivity implements
 		SharedPreferences sharedPreferences = getSharedPreferences(
 				"TagPreferences", MODE_PRIVATE);
 		settingsEditor = sharedPreferences.edit();
-
+		db = new DatabaseHelper(getApplicationContext());
+		tagItems = db.getAllTags();
 		super.onCreate(savedInstanceState);
 		setTheme(R.style.AppBaseTheme);
 		addPreferencesFromResource(R.xml.preference);
@@ -55,12 +62,10 @@ public class Preferences extends PreferenceActivity implements
 					.setSummary("Echonotes will not record when the phone is on standby");
 
 		}
-		
 
 		for (int i = 0; i < 6; i++) {
 			settingPref = findPreference("etTagPos" + i);
-			settingPref.setTitle(getSharedPreferences("TagPreferences",
-					MODE_PRIVATE).getString("tagPos" + i, "Tag " + i));
+			settingPref.setTitle(tagItems.get(i).getTagName());
 		}
 
 		settingPref = findPreference("SortPreference");
@@ -88,9 +93,9 @@ public class Preferences extends PreferenceActivity implements
 			((EditTextPreference) settingPref)
 					.setTitle(((EditTextPreference) settingPref).getText());
 			if (key.endsWith("0")) {
-				Log.d("tagpos", "ONE WORKS!");
 				settingsEditor.putString("tagPos0",
 						((EditTextPreference) settingPref).getText());
+				//replace tag name in db
 			} else if (key.endsWith("1")) {
 				settingsEditor.putString("tagPos1",
 						((EditTextPreference) settingPref).getText());
@@ -107,7 +112,7 @@ public class Preferences extends PreferenceActivity implements
 				settingsEditor.putString("tagPos5",
 						((EditTextPreference) settingPref).getText());
 			}
-			
+
 			settingsEditor.commit();
 		}
 		if (key.equals("RecordPreference")) {

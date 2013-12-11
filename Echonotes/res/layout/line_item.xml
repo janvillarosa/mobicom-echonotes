@@ -53,7 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/dateTextView"
         android:layout_alignRight="@+id/listBGImageView"
-        android:layout_marginRight="12dp"
-        android:src="@drawable/catmarker_cyan" />
+        android:layout_marginRight="12dp"/>
 
 </RelativeLayout>

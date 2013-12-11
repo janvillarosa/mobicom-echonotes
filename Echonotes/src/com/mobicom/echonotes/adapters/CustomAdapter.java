@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /********* Adapter class extends with BaseAdapter and implements with OnClickListener ************/
@@ -66,7 +67,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 
 		public TextView text;
 		public TextView text1;
-		public TextView color;
+		public ImageView color;
 		public TextView text2;
 
 	}
@@ -90,6 +91,7 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 			holder.text1 = (TextView) vi
 					.findViewById(R.id.numAnnotationTextView);
 			holder.text2 = (TextView) vi.findViewById(R.id.dateTextView);
+			holder.color = (ImageView) vi.findViewById(R.id.imageView1);
 
 			/************ Set holder with LayoutInflater ************/
 			vi.setTag(holder);
@@ -108,7 +110,29 @@ public class CustomAdapter extends BaseAdapter implements OnClickListener {
 			holder.text.setText(tempValues.getNoteName());
 			holder.text1.setText(tempValues.getNumAnnotations()+ " annotations");
 			holder.text2.setText(tempValues.getDateAndTime());
-
+			
+			System.out.println("Customadapter:" + tempValues.getColor());
+			
+			if(tempValues.getColor().equals("cyan")){
+				holder.color.setImageResource(R.drawable.catmarker_cyan);
+			}
+			else if(tempValues.getColor().equals("green")){
+				holder.color.setImageResource(R.drawable.catmarker_green);
+			}
+			else if(tempValues.getColor().equals("orange")){
+				holder.color.setImageResource(R.drawable.catmarker_orange);
+			}
+			else if(tempValues.getColor().equals("purple")){
+				holder.color.setImageResource(R.drawable.catmarker_purple);
+			}
+			else if(tempValues.getColor().equals("brown")){
+				holder.color.setImageResource(R.drawable.catmarker_brown);
+			}
+			else if(tempValues.getColor().equals("red")){
+				holder.color.setImageResource(R.drawable.catmarker_red);
+			} else {
+				holder.color.setImageResource(R.drawable.catmarker_red);
+			}
 			/******** Set Item Click Listener for LayoutInflater for each row *******/
 
 			vi.setOnClickListener(new OnItemClickListener(position));

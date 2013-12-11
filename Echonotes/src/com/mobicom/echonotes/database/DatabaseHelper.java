@@ -327,8 +327,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " = " + "tnt." + KEY_TAG_ID + " AND tn." + KEY_ID + " = "
 				+ "tnt." + KEY_NOTE_ID;
 
-		Log.e(LOG, selectQuery); // MARKER FOR CHECKING
-
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
 
@@ -349,13 +347,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return notes;
 	}
+	
+	public ArrayList<Tag> getTagofNote(int noteID) {
+		ArrayList<Tag> tags = new ArrayList<Tag>();
+		String selectQuery = "SELECT  * FROM " + TABLE_TAGS + " tt, "
+				+ TABLE_NOTES + " tn, " + TABLE_NOTES_TAGS + " tnt WHERE tnt."
+				+ KEY_NOTE_ID + " = " + noteID + " AND tn." + KEY_ID
+				+ " = " + "tnt." + KEY_NOTE_ID + " AND tt." + KEY_ID + " = "
+				+ "tnt." + KEY_TAG_ID;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.rawQuery(selectQuery, null);
+
+		// looping through all rows and adding to list
+		if (c.moveToFirst()) {
+			do {
+				Tag t = new Tag();
+				t.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+				t.setTagName(c.getString(c.getColumnIndex(KEY_NAME)));
+				t.setColor(c.getString(c.getColumnIndex(KEY_COLOR)));
+				Log.d("tagName", t.getTagName());
+
+				// adding to tags list
+				tags.add(t);
+			} while (c.moveToNext());
+		}
+		return tags;
+	}
 
 	public ArrayList<Note> getNotesLike(String noteName) {
 		ArrayList<Note> notes = new ArrayList<Note>();
 		String selectQuery = "SELECT  * FROM " + TABLE_NOTES + " WHERE "
 				+ KEY_NAME + " LIKE " + "'%" + noteName + "%'";
-
-		Log.e(LOG, selectQuery); // MARKER FOR CHECKING
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -382,8 +405,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ArrayList<Tag> tags = new ArrayList<Tag>();
 		String selectQuery = "SELECT  * FROM " + TABLE_TAGS + " WHERE "
 				+ KEY_NAME + " = " + tagName;
-
-		Log.e(LOG, selectQuery); // MARKER FOR CHECKING
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);

@@ -30,6 +30,7 @@ import android.widget.SearchView;
 import com.mobicom.echonotes.ListModel;
 import com.mobicom.echonotes.R;
 import com.mobicom.echonotes.adapters.CustomAdapter;
+import com.mobicom.echonotes.adapters.TagAdapter;
 import com.mobicom.echonotes.data.RecordingSession;
 import com.mobicom.echonotes.database.Annotation;
 import com.mobicom.echonotes.database.DatabaseHelper;
@@ -44,7 +45,7 @@ public class ListOfNotes extends Activity {
 	public ArrayList<ListModel> noteListModelArray = new ArrayList<ListModel>();
 	public ArrayList<Annotation> annotations = new ArrayList<Annotation>();
 	private String[] drawerListViewItems;
-	private ArrayList<String> tagsListViewItems;
+	private ArrayList<Tag> tagsListViewItems;
 	private DrawerLayout drawerLayout;
 	private ListView drawerListView;
 	private ListView tagsListView;
@@ -71,29 +72,23 @@ public class ListOfNotes extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
 		db = new DatabaseHelper(getApplicationContext());
-
 		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
 		if (sharedPreferences.getBoolean("firstrun", true)) {
-			System.out.println("WENT IN FIRST RUN");
 			settingsEditor = sharedPreferences.edit();
+
 			settingsEditor.putString("tagPos0", "Home");
 			settingsEditor.putString("tagPos1", "School");
 			settingsEditor.putString("tagPos2", "Work");
 			settingsEditor.putString("tagPos3", "Leisure");
 			settingsEditor.putString("tagPos4", "Personal");
 			settingsEditor.putString("tagPos5", "Miscellaneous");
+
+			initializeTagList();
+
 			settingsEditor.putBoolean("firstrun", false);
 			settingsEditor.commit();
-			
-			for (int i = 0; i < 6; i++) {
-				Tag tag = new Tag();
-				tag.setTagName(sharedPreferences.getString("tagPos" + i,
-						"Tag " + i));
-				long tagID = db.createTag(tag);
-				System.out.println(tagID);
-			}
+
 		}
-		
 
 		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
@@ -101,15 +96,9 @@ public class ListOfNotes extends Activity {
 		drawerListViewItems = getResources().getStringArray(R.array.items);
 		drawerListView = (ListView) findViewById(R.id.buttonsListView_gui);
 
-		tagsListViewItems = new ArrayList<String>();
-
-		for (int i = 0; i < 6; i++) {
-			tagsListViewItems.add(sharedPreferences.getString("tagPos" + i,
-					"Tag " + i));
-		}
+		tagsListViewItems = db.getAllTags();
 		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
-		tagsListView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.navdrawer_list_item, tagsListViewItems));
+		tagsListView.setAdapter(new TagAdapter(this, tagsListViewItems));
 		tagsListView.setClickable(true);
 		tagsListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -126,8 +115,6 @@ public class ListOfNotes extends Activity {
 
 		drawerListView.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.navdrawer_list_item, drawerListViewItems));
-		tagsListView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.navdrawer_list_item, tagsListViewItems));
 
 		drawerListView.setClickable(true);
 		drawerListView
@@ -184,21 +171,64 @@ public class ListOfNotes extends Activity {
 	public void onResume() {
 		super.onResume();
 		initializeNoteList();
-		
-		tagsListViewItems.clear();
-		for (int i = 0; i < 6; i++) {
-			tagsListViewItems.add(sharedPreferences.getString("tagPos" + i,
-					"Tag " + i));
-		}
-		tagsListView = (ListView) findViewById(R.id.tagsListView_gui);
-		tagsListView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.navdrawer_list_item, tagsListViewItems));
+		tagsListViewItems = db.getAllTags();
+		tagsListView.setAdapter(new TagAdapter(this, tagsListViewItems));
+		tagsListView.setClickable(true);
+		tagsListView
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView parentView,
+							View childView, int position, long id) {
+					}
+				});
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		db.closeDB();
+	}
+
+	private void initializeTagList() {
+		for (int i = 1; i <= 6; i++) {
+			String tagName = "";
+			String tagColor = "";
+			switch (i) {
+			case 1:
+				tagName = "Home";
+				tagColor = "red";
+				break;
+			case 2:
+				tagName = "School";
+				tagColor = "orange";
+				break;
+			case 3:
+				tagName = "Work";
+				tagColor = "green";
+				break;
+			case 4:
+				tagName = "Leisure";
+				tagColor = "cyan";
+				break;
+			case 5:
+				tagName = "Personal";
+				tagColor = "purple";
+				break;
+			case 6:
+				tagName = "Miscellaneous";
+				tagColor = "brown";
+				break;
+			}
+			Tag tag = new Tag();
+			tag.setTagName(tagName);
+			tag.setColor(tagColor);
+			long tagID = db.createTag(tag);
+			
+			System.out.println(tagID);
+
+			Log.d("TaggetName", tag.getTagName());
+			Log.d("TaggetColor", tag.getColor());
+		}
 	}
 
 	private void initializeNoteList() {
@@ -218,6 +248,15 @@ public class ListOfNotes extends Activity {
 			noteListModel.setNoteName(note.getNoteName());
 			noteListModel.setNumAnnotations(annotations.size());
 			noteListModel.setDateAndTime(note.getDateModified());
+			int noteID = (int) note.getNoteId();
+			
+			ArrayList<Tag> tag = db.getTagofNote(i+1);
+			
+			if (tag.size() != 0) {
+				noteListModel.setColor(tag.get(0).getColor());
+			} else {
+			}
+			
 			noteListModelArray.add(noteListModel);
 
 		}
@@ -320,6 +359,14 @@ public class ListOfNotes extends Activity {
 		intent.putExtra("NOTE_NAME", tempValues.getNoteName());
 		intent.putExtra("NUM_ANNOTATIONS", tempValues.getNumAnnotations());
 
+		startActivity(intent);
+	}
+
+	public void onTagItemClick(int mPosition) {
+		Intent intent = new Intent(ListOfNotes.this,
+				SearchResultsActivity.class);
+		intent.putExtra("retrieve", "tags");
+		intent.putExtra("tagID", mPosition);
 		startActivity(intent);
 	}
 

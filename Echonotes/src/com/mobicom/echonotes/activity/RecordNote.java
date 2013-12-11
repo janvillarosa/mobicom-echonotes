@@ -130,13 +130,14 @@ public class RecordNote extends Activity {
 	}
 
 	private void setOnTouch() {
-		
+
 		startRecord.setOnTouchListener(new View.OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
 				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
-					startRecord.setImageResource(R.drawable.start_record_pressed);
+					startRecord
+							.setImageResource(R.drawable.start_record_pressed);
 
 				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
 					startRecord.setImageResource(R.drawable.start_record);
@@ -362,7 +363,7 @@ public class RecordNote extends Activity {
 						.getListOfPicturePathAnnotations().get(
 								currentNote.getListOfPicturePathAnnotations()
 										.size() - 1), ""
-						+ annotationTimestamp());
+						+ timeStamp);
 				annotation_id = db.createAnnotation(annotation);
 				db.createNoteAnnotation(note_id, annotation_id);
 
@@ -393,10 +394,14 @@ public class RecordNote extends Activity {
 	}
 
 	protected void onPause() {
-		super.onPause();
-		if (!recordOnStandby) {
-			stopRecording();
-			saveRecording();
+		try {
+			super.onPause();
+			if (!recordOnStandby) {
+				stopRecording();
+				saveRecording();
+			}
+		} catch (Exception e) {
+
 		}
 	}
 
@@ -423,7 +428,7 @@ public class RecordNote extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
-				currentNote.setCategory(tags[which]);
+				currentNote.setCategory(tags[which]+1);
 				db.createNoteTag(note_id, which);
 				currentNote.writeMetadata();
 
@@ -477,7 +482,7 @@ public class RecordNote extends Activity {
 		// the addAction re-use the same intent to keep the example short
 		Notification n = new Notification.Builder(this)
 				.setContentTitle("Echonotes is recording.")
-				.setContentText("Tap this notification to go back to the app.")
+				.setContentText("Touch this notification to go back to the app.")
 				.setSmallIcon(R.drawable.ic_stat_device_access_mic)
 				.setAutoCancel(true).build();
 
