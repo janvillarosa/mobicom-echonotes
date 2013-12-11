@@ -13,11 +13,13 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,8 +32,8 @@ public class PlayNote extends Activity {
 
 	private MediaPlayer mPlayer;
 	private ImageView playButton, image, nextAnnotation, previousAnnotation;
-	private TextView noteNameTextView;
-	private TextView numAnnotationsTextView;
+	private TextView noteNameTextView, numAnnotationsTextView,
+			durationTextView;
 	private SeekBar seekbar;
 	private int numAnnotations, annotationIterator = 0;
 	private boolean mStartPlaying = true;
@@ -39,14 +41,23 @@ public class PlayNote extends Activity {
 	private boolean playStart = false;
 	private ArrayList<Annotation> annotations;
 	private View textStub, imageStub;
+	private Chronometer playTime;
+	private long timeSinceStop = 0;
 
 	private Runnable moveSeekBarRunnable = new Runnable() {
 		@Override
 		public void run() {
+			seekbar.setMax(mPlayer.getDuration());
 			seekbar.setProgress(mPlayer.getCurrentPosition());
 			skippingEnbled();
 			showAnnotations();
-			handler.postDelayed(moveSeekBarRunnable, 100);
+
+			if (mPlayer.getCurrentPosition() >= mPlayer.getDuration() - 50) {
+				playButton.setImageResource(R.drawable.ic_action_play);
+				timeSinceStop = 0;
+				playTime.stop();
+			}
+			handler.postDelayed(moveSeekBarRunnable, 10);
 		}
 	};
 
@@ -54,7 +65,6 @@ public class PlayNote extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.player_screen);
-		
 
 		DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
@@ -65,6 +75,8 @@ public class PlayNote extends Activity {
 		seekbar = (SeekBar) findViewById(R.id.seekBar1);
 		noteNameTextView = (TextView) findViewById(R.id.noteNameTextView);
 		numAnnotationsTextView = (TextView) findViewById(R.id.numAnnotations);
+		durationTextView = (TextView) findViewById(R.id.durationTextView);
+		playTime = (Chronometer) findViewById(R.id.playTimeChronometer);
 		mPlayer = new MediaPlayer();
 
 		textStub = ((ViewStub) findViewById(R.id.playerTextStub)).inflate();
@@ -72,7 +84,6 @@ public class PlayNote extends Activity {
 		textStub.setVisibility(View.GONE);
 		imageStub.setVisibility(View.GONE);
 		skippingEnbled();
-		
 
 		Bundle extras;
 
@@ -91,12 +102,57 @@ public class PlayNote extends Activity {
 					.getSerializable("NUM_ANNOTATIONS");
 			numAnnotationsTextView.setText(numAnnotations + " annotations");
 			this.setTitle((String) savedInstanceState
-					.getSerializable("NOTE_NAME"));;
+					.getSerializable("NOTE_NAME"));
+			;
 		}
 
 		annotations = db.getAnnotationsOfNote(noteNameTextView.getText()
 				.toString());
 		numAnnotationsTextView.setText(numAnnotations + " annotations");
+
+		mPlayer = new MediaPlayer();
+
+		try {
+			mPlayer.setDataSource(Environment.getExternalStorageDirectory()
+					+ "/Echonotes/" + noteNameTextView.getText().toString()
+					+ "/" + noteNameTextView.getText().toString()
+					+ "_main_recording.3gp");
+
+			mPlayer.prepare();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (annotations.size() == 0){
+			nextAnnotation.setClickable(false);
+			nextAnnotation
+					.setImageResource(R.drawable.ic_action_next_item_pressed);
+		}
+
+		int minutes = mPlayer.getDuration() / 1000 / 60;
+		int seconds = mPlayer.getDuration() / 1000 % 60;
+		String minutesFormatted = "" + minutes;
+		String secondsFormatted = "" + seconds;
+
+		if (minutes < 10) {
+			minutesFormatted = "0" + minutesFormatted;
+		}
+
+		if (seconds < 10) {
+			secondsFormatted = "0" + secondsFormatted;
+		}
+		durationTextView.setText(minutesFormatted + ":" + secondsFormatted);
+		playTime.setBase(SystemClock.elapsedRealtime());
 
 		setListeners();
 		setOnTouch();
@@ -120,7 +176,7 @@ public class PlayNote extends Activity {
 				return false;
 			}
 		});
-		
+
 		nextAnnotation.setOnTouchListener(new View.OnTouchListener() {
 
 			@Override
@@ -162,9 +218,21 @@ public class PlayNote extends Activity {
 					mPlayer.seekTo(progress);
 					seekbar.setProgress(progress);
 					showAnnotations();
+
+					if (seekbar.getMax() == seekbar.getProgress()) {
+						playButton.setImageResource(R.drawable.ic_action_play);
+						timeSinceStop = 0;
+						playTime.stop();
+					}
 				} else {
 					seekbar.setProgress(mPlayer.getCurrentPosition());
 					showAnnotations();
+
+					if (seekbar.getMax() == seekbar.getProgress()) {
+						playButton.setImageResource(R.drawable.ic_action_play);
+						timeSinceStop = 0;
+						playTime.stop();
+					}
 				}
 			}
 		});
@@ -174,9 +242,15 @@ public class PlayNote extends Activity {
 			public void onClick(View v) {
 				onPlay(mStartPlaying);
 				if (mStartPlaying) {
+					playTime.setBase(SystemClock.elapsedRealtime()
+							+ timeSinceStop);
+					playTime.start();
 					playButton.setImageResource(R.drawable.ic_action_pause);
 				} else {
 					playButton.setImageResource(R.drawable.ic_action_play);
+					timeSinceStop = playTime.getBase()
+							- SystemClock.elapsedRealtime();
+					playTime.stop();
 				}
 				mStartPlaying = !mStartPlaying;
 			}
@@ -185,10 +259,16 @@ public class PlayNote extends Activity {
 		nextAnnotation.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int timeStamp = Integer.parseInt(annotations.get(
-						annotationIterator).getAnnotationTimeStamp());
-				mPlayer.seekTo(timeStamp);
-				seekbar.setProgress(timeStamp);
+				if (annotations.size() != 0) {
+					int timeStamp = Integer.parseInt(annotations.get(
+							annotationIterator).getAnnotationTimeStamp());
+					mPlayer.seekTo(timeStamp);
+					seekbar.setProgress(timeStamp);
+				} else {
+					nextAnnotation.setClickable(false);
+					nextAnnotation
+							.setImageResource(R.drawable.ic_action_next_item_pressed);
+				}
 			}
 		});
 		previousAnnotation.setOnClickListener(new View.OnClickListener() {
@@ -231,24 +311,12 @@ public class PlayNote extends Activity {
 
 	private void startPlaying() {
 		if (!playStart) {
-			mPlayer = new MediaPlayer();
-			try {
-				mPlayer.setDataSource(Environment.getExternalStorageDirectory()
-						+ "/Echonotes/" + noteNameTextView.getText().toString()
-						+ "/" + noteNameTextView.getText().toString()
-						+ "_main_recording.3gp");
-				mPlayer.prepare();
+			seekbar.setProgress(0);
+			seekbar.setMax(mPlayer.getDuration());
+			handler.post(moveSeekBarRunnable);
 
-				seekbar.setProgress(0);
-				seekbar.setMax(mPlayer.getDuration());
-
-				handler.post(moveSeekBarRunnable);
-
-				mPlayer.start();
-				playStart = true;
-			} catch (IOException e) {
-
-			}
+			mPlayer.start();
+			playStart = true;
 		} else {
 			mPlayer.start();
 		}

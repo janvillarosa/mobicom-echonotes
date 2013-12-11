@@ -70,6 +70,7 @@ public class ListOfNotes extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_of_notes);
+		db = new DatabaseHelper(getApplicationContext());
 
 		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
 		if (sharedPreferences.getBoolean("firstrun", true)) {
@@ -83,9 +84,16 @@ public class ListOfNotes extends Activity {
 			settingsEditor.putString("tagPos5", "Miscellaneous");
 			settingsEditor.putBoolean("firstrun", false);
 			settingsEditor.commit();
+			
+			for (int i = 0; i < 6; i++) {
+				Tag tag = new Tag();
+				tag.setTagName(sharedPreferences.getString("tagPos" + i,
+						"Tag " + i));
+				long tagID = db.createTag(tag);
+				System.out.println(tagID);
+			}
 		}
-
-		db = new DatabaseHelper(getApplicationContext());
+		
 
 		list = (ListView) findViewById(R.id.noteListView);
 		initializeNoteList();
@@ -111,7 +119,7 @@ public class ListOfNotes extends Activity {
 						Intent intent = new Intent(ListOfNotes.this,
 								SearchResultsActivity.class);
 						intent.putExtra("retrieve", "tags");
-						intent.putExtra("tag", tagsListViewItems.get(position));
+						intent.putExtra("tagID", position);
 						startActivity(intent);
 					}
 				});

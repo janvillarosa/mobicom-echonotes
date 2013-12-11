@@ -45,7 +45,8 @@
         <activity
             android:name="com.mobicom.echonotes.activity.SearchResultsActivity"
             android:launchMode="singleTop"
-            android:label="Searchable" >
+            android:label="Search Results"
+            android:parentActivityName="com.mobicom.echonotes.activity.ListOfNotes" >
         </activity>
          <activity
             android:name="com.mobicom.echonotes.activity.PlayNote"

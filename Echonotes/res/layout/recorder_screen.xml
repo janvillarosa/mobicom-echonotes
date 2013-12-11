@@ -24,6 +24,7 @@
                 android:id="@+id/newTextNoteImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:scaleType="fitXY"
                 android:src="@drawable/add_note_annotation" />
@@ -32,6 +33,7 @@
                 android:id="@+id/newPhotoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:scaleType="fitXY"
                 android:src="@drawable/add_picture_annotation" />
@@ -88,14 +90,17 @@
             android:textSize="22sp" >
         </EditText>
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/main_color"
+            android:paddingLeft="10dip"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="12dp"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/recordTimeChronometer"
-            android:src="@drawable/recording_separator" />
-
+            android:layout_below="@+id/recordTimeChronometer" />
+        
     </RelativeLayout>
 
     <ViewStub
@@ -108,7 +113,7 @@
         android:layout_below="@+id/imageButtonContainer"
         android:inflatedId="@+id/annotationShower"
         android:layout="@layout/annotation_shower_layout" />
-    
+
     <ViewStub
         android:id="@+id/imageAnnotationShowStub"
         android:layout_width="fill_parent"

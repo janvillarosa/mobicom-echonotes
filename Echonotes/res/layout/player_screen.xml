@@ -10,6 +10,7 @@
         android:id="@+id/playerImageStub"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginBottom = "20dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:inflatedId="@+id/playAnnotationImageShower"
@@ -19,6 +20,7 @@
         android:id="@+id/playerTextStub"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginBottom = "20dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/playerImageStub"
         android:inflatedId="@+id/playAnnotationShower"
@@ -30,41 +32,40 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:background="@drawable/list_bg"
+        android:background="@drawable/playnote_bg"
         android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5" >
+            android:layout_marginTop = "10dp"
+            android:weightSum="6" >
 
             <Chronometer
-                android:id="@+id/chronometer1"
+                android:id="@+id/playTimeChronometer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="0.5"
                 android:layout_gravity="center_vertical"
-                android:text="Chronometer" />
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight=".5" />
 
             <SeekBar
                 android:id="@+id/seekBar1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="4.00" />
+                android:layout_weight="5.00" />
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/durationTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="0.5"
-                android:text="Small"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:text="00:00"
+                android:layout_weight=".5"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -97,7 +98,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginBottom="11dp"
-                android:layout_marginLeft="45dp"
+                android:layout_marginRight="60dp"
                 android:src="@drawable/ic_action_previous_item" />
 
             <ImageView
@@ -111,7 +112,7 @@
                 android:id="@+id/nextAnnotation"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginLeft="60dp"
                 android:src="@drawable/ic_action_next_item" />
         </LinearLayout>
     </LinearLayout>

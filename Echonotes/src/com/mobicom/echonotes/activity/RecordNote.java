@@ -130,6 +130,21 @@ public class RecordNote extends Activity {
 	}
 
 	private void setOnTouch() {
+		
+		startRecord.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+					startRecord.setImageResource(R.drawable.start_record_pressed);
+
+				} else if (arg1.getAction() == MotionEvent.ACTION_UP) {
+					startRecord.setImageResource(R.drawable.start_record);
+
+				}
+				return false;
+			}
+		});
 
 		newPhoto.setOnTouchListener(new View.OnTouchListener() {
 
@@ -409,12 +424,12 @@ public class RecordNote extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 
 				currentNote.setCategory(tags[which]);
-				Tag tag = new Tag();
-				tag_id = db.createTag(tag);
-				db.createNoteTag(note_id, tag_id);
+				db.createNoteTag(note_id, which);
 				currentNote.writeMetadata();
 
-				notificationManager.cancelAll();
+				if (showNotif)
+					notificationManager.cancelAll();
+
 				finish();
 
 			}

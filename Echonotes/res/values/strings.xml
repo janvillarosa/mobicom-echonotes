@@ -13,18 +13,10 @@
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
 
-    <string-array name="tags">
-        <item>MOBICOM</item>
-        <item>ADVSTAT</item>
-        <item>COMPILE</item>
-        <item>Others</item>
-    </string-array>
-
     <string name="search_hint">Search notes</string>
 
     <string-array name="sort_options">
-        <item>Last Modified</item>
-        <item>Categories</item>
+        <item>Date Created</item>
         <item>Title</item>
     </string-array>
 

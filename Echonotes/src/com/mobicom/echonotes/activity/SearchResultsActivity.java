@@ -33,6 +33,7 @@ public class SearchResultsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search_results);
 		handleIntent(getIntent());
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -52,8 +53,7 @@ public class SearchResultsActivity extends Activity {
 					e.printStackTrace();
 				}
 			} else if (intent.getStringExtra("retrieve").equals("tags")) {
-				searchResults = dbHelper.getNotesofTag(intent
-						.getStringExtra("tag"));// -- get method for retrieving
+				searchResults = dbHelper.getNotesofTag(intent.getIntExtra("tagID", 1));// -- get method for retrieving
 												// ArrayList<Note> based on tags
 			}
 			list = (ListView) findViewById(R.id.searchResultsListView);

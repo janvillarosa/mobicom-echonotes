@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title = "MAIN">
+    <PreferenceCategory android:title = "NOTE SETTINGS">
         <PreferenceScreen android:title="Change Tag Names" 
             			  android:summary="Change names of existing tags" >
             <EditTextPreference android:key="etTagPos0" android:dialogTitle="New Tag Name" />
@@ -14,7 +14,7 @@
             				android:key = "RecordPreference"
             				android:defaultValue="true" />"
     </PreferenceCategory>
-    <PreferenceCategory android:title="MISC">
+    <PreferenceCategory android:title="MISCELLANEOUS">
         <ListPreference android:title="Sort Echonotes by"
             android:key="SortPreference" 
             android:entries="@array/sort_options"
