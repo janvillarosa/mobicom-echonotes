@@ -86,6 +86,7 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="right"
             android:hint="New Note"
+            android:maxLength="20"
             android:textColor="#000000"
             android:textSize="22sp" >
         </EditText>
