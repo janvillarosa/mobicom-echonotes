@@ -90,29 +90,42 @@ public class Preferences extends PreferenceActivity implements
 			String key) {
 		Preference settingPref = findPreference(key);
 		if (key.startsWith("etTagPos")) {
+			Tag tag = new Tag();
 			((EditTextPreference) settingPref)
 					.setTitle(((EditTextPreference) settingPref).getText());
 			if (key.endsWith("0")) {
 				settingsEditor.putString("tagPos0",
 						((EditTextPreference) settingPref).getText());
-				//replace tag name in db
+				tag.setId(0);
+				tag.setColor("red");
 			} else if (key.endsWith("1")) {
 				settingsEditor.putString("tagPos1",
 						((EditTextPreference) settingPref).getText());
+				tag.setId(1);
+				tag.setColor("orange");
 			} else if (key.endsWith("2")) {
 				settingsEditor.putString("tagPos2",
 						((EditTextPreference) settingPref).getText());
+				tag.setId(2);
+				tag.setColor("green");
 			} else if (key.endsWith("3")) {
 				settingsEditor.putString("tagPos3",
 						((EditTextPreference) settingPref).getText());
+				tag.setId(3);
+				tag.setColor("cyan");
 			} else if (key.endsWith("4")) {
 				settingsEditor.putString("tagPos4",
 						((EditTextPreference) settingPref).getText());
+				tag.setId(4);
+				tag.setColor("purple");
 			} else if (key.endsWith("5")) {
 				settingsEditor.putString("tagPos5",
 						((EditTextPreference) settingPref).getText());
+				tag.setId(5);
+				tag.setColor("brown");
 			}
-
+			tag.setTagName(((EditTextPreference) settingPref).getText());
+			db.updateTag(tag);
 			settingsEditor.commit();
 		}
 		if (key.equals("RecordPreference")) {

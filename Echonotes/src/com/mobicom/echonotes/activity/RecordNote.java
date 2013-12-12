@@ -363,7 +363,7 @@ public class RecordNote extends Activity {
 						.getListOfPicturePathAnnotations().get(
 								currentNote.getListOfPicturePathAnnotations()
 										.size() - 1), ""
-						+ timeStamp);
+						+ annotationTimestamp());
 				annotation_id = db.createAnnotation(annotation);
 				db.createNoteAnnotation(note_id, annotation_id);
 
@@ -428,7 +428,7 @@ public class RecordNote extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
-				currentNote.setCategory(tags[which]+1);
+				currentNote.setCategory(tags[which]);
 				db.createNoteTag(note_id, which);
 				currentNote.writeMetadata();
 
@@ -482,7 +482,7 @@ public class RecordNote extends Activity {
 		// the addAction re-use the same intent to keep the example short
 		Notification n = new Notification.Builder(this)
 				.setContentTitle("Echonotes is recording.")
-				.setContentText("Touch this notification to go back to the app.")
+				.setContentText("Tap this notification to go back to the app.")
 				.setSmallIcon(R.drawable.ic_stat_device_access_mic)
 				.setAutoCancel(true).build();
 

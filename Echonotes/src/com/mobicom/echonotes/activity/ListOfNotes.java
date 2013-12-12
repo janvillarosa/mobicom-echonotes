@@ -75,16 +75,17 @@ public class ListOfNotes extends Activity {
 		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
 		if (sharedPreferences.getBoolean("firstrun", true)) {
 			settingsEditor = sharedPreferences.edit();
-
-			settingsEditor.putString("tagPos0", "Home");
-			settingsEditor.putString("tagPos1", "School");
-			settingsEditor.putString("tagPos2", "Work");
-			settingsEditor.putString("tagPos3", "Leisure");
-			settingsEditor.putString("tagPos4", "Personal");
-			settingsEditor.putString("tagPos5", "Miscellaneous");
+			
+			 settingsEditor.putString("tagPos0", "Home");
+			 settingsEditor.putString("tagPos1", "School");
+			 settingsEditor.putString("tagPos2", "Work");
+			 settingsEditor.putString("tagPos3", "Leisure");
+			 settingsEditor.putString("tagPos4", "Personal");
+			 settingsEditor.putString("tagPos5", "Miscellaneous");
+			 
 
 			initializeTagList();
-
+			tagsListViewItems = db.getAllTags();
 			settingsEditor.putBoolean("firstrun", false);
 			settingsEditor.commit();
 
@@ -249,14 +250,14 @@ public class ListOfNotes extends Activity {
 			noteListModel.setNumAnnotations(annotations.size());
 			noteListModel.setDateAndTime(note.getDateModified());
 			int noteID = (int) note.getNoteId();
-			
-			ArrayList<Tag> tag = db.getTagofNote(i+1);
-			
+
+			ArrayList<Tag> tag = db.getTagofNote(i + 1);
+
 			if (tag.size() != 0) {
 				noteListModel.setColor(tag.get(0).getColor());
 			} else {
 			}
-			
+
 			noteListModelArray.add(noteListModel);
 
 		}

@@ -102,9 +102,6 @@ public class TagAdapter extends BaseAdapter implements OnClickListener {
 
 			/************ Set Model values in Holder elements ***********/
 			
-			Log.d("getName", tempValues.getTagName());
-			Log.d("getColor", tempValues.getColor());
-			
 			holder.text.setText(tempValues.getTagName());
 			if(tempValues.getColor().equals("cyan")){
 				holder.color.setImageResource(R.drawable.catmarker_cyan);
