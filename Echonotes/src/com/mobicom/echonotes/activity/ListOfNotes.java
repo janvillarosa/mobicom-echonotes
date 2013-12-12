@@ -75,14 +75,13 @@ public class ListOfNotes extends Activity {
 		sharedPreferences = getSharedPreferences("TagPreferences", MODE_PRIVATE);
 		if (sharedPreferences.getBoolean("firstrun", true)) {
 			settingsEditor = sharedPreferences.edit();
-			
-			 settingsEditor.putString("tagPos0", "Home");
-			 settingsEditor.putString("tagPos1", "School");
-			 settingsEditor.putString("tagPos2", "Work");
-			 settingsEditor.putString("tagPos3", "Leisure");
-			 settingsEditor.putString("tagPos4", "Personal");
-			 settingsEditor.putString("tagPos5", "Miscellaneous");
-			 
+
+			settingsEditor.putString("tagPos0", "Home");
+			settingsEditor.putString("tagPos1", "School");
+			settingsEditor.putString("tagPos2", "Work");
+			settingsEditor.putString("tagPos3", "Leisure");
+			settingsEditor.putString("tagPos4", "Personal");
+			settingsEditor.putString("tagPos5", "Miscellaneous");
 
 			initializeTagList();
 			tagsListViewItems = db.getAllTags();
@@ -169,6 +168,10 @@ public class ListOfNotes extends Activity {
 		});
 	}
 
+	public void onRestore() {
+		tagsListViewItems = db.getAllTags();
+	}
+
 	public void onResume() {
 		super.onResume();
 		initializeNoteList();
@@ -224,7 +227,7 @@ public class ListOfNotes extends Activity {
 			tag.setTagName(tagName);
 			tag.setColor(tagColor);
 			long tagID = db.createTag(tag);
-			
+
 			System.out.println(tagID);
 
 			Log.d("TaggetName", tag.getTagName());

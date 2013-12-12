@@ -214,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(KEY_COLOR, tag.getColor());
 
 		// updating row
-		return db.update(TABLE_NOTES, values, KEY_ID + " = ?",
+		return db.update(TABLE_TAGS, values, KEY_ID + " = ?",
 				new String[] { String.valueOf(tag.getTagId()) });
 	}
 

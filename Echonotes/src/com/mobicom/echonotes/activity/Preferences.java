@@ -96,32 +96,32 @@ public class Preferences extends PreferenceActivity implements
 			if (key.endsWith("0")) {
 				settingsEditor.putString("tagPos0",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(0);
+				tag.setId(1);
 				tag.setColor("red");
 			} else if (key.endsWith("1")) {
 				settingsEditor.putString("tagPos1",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(1);
+				tag.setId(2);
 				tag.setColor("orange");
 			} else if (key.endsWith("2")) {
 				settingsEditor.putString("tagPos2",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(2);
+				tag.setId(3);
 				tag.setColor("green");
 			} else if (key.endsWith("3")) {
 				settingsEditor.putString("tagPos3",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(3);
+				tag.setId(4);
 				tag.setColor("cyan");
 			} else if (key.endsWith("4")) {
 				settingsEditor.putString("tagPos4",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(4);
+				tag.setId(5);
 				tag.setColor("purple");
 			} else if (key.endsWith("5")) {
 				settingsEditor.putString("tagPos5",
 						((EditTextPreference) settingPref).getText());
-				tag.setId(5);
+				tag.setId(6);
 				tag.setColor("brown");
 			}
 			tag.setTagName(((EditTextPreference) settingPref).getText());
